@@ -4,13 +4,14 @@ import { Photo } from "@shared/schema";
 import PhotoCard from "@/components/PhotoCard";
 import { Lightbox } from "@/components/ui/lightbox";
 import { motion } from "framer-motion";
+import { Heart, Camera, MapPin, Calendar } from "lucide-react";
 
 const categoryButtons = [
-  { id: "all", label: "All Photos" },
-  { id: "dates", label: "Date Nights" },
-  { id: "trips", label: "Trips" },
-  { id: "everyday", label: "Everyday Moments" },
-  { id: "special", label: "Special Occasions" }
+  { id: "all", label: "All Photos", icon: Camera },
+  { id: "dates", label: "Date Nights", icon: Heart },
+  { id: "trips", label: "Trips", icon: MapPin },
+  { id: "everyday", label: "Everyday", icon: Calendar },
+  { id: "special", label: "Special", icon: Heart }
 ];
 
 const Gallery = () => {
@@ -51,33 +52,62 @@ const Gallery = () => {
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, scale: 0.9 },
+    show: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    },
   };
 
   return (
-    <section id="gallery" className="py-12 md:py-20 bg-neutral-light/50">
-      <div className="container mx-auto px-4">
+    <section id="gallery" className="py-12 md:py-20 bg-muted/30 relative">
+      {/* Decorative elements */}
+      <div className="absolute top-20 left-10 opacity-10 hidden md:block">
+        <Camera className="h-24 w-24 text-primary" />
+      </div>
+      <div className="absolute bottom-20 right-10 opacity-10 hidden md:block">
+        <Heart className="h-20 w-20 text-primary" />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="font-heading text-3xl md:text-4xl mb-3">Our Photo Gallery</h2>
-          <p className="text-neutral-dark/70 max-w-2xl mx-auto">
-            All of our favorite moments captured in time. Click on any photo to see it in full size.
-          </p>
+          <div className="relative inline-block mb-3">
+            <h2 className="font-heading text-3xl md:text-4xl text-primary">Our Photo Albums</h2>
+            <div className="absolute -bottom-2 left-6 right-6 h-2 bg-secondary/30 -z-10 rounded-full"></div>
+          </div>
+          <div className="bg-white p-4 rounded-xl border-2 border-dashed border-foreground/10 max-w-2xl mx-auto shadow-sm">
+            <p className="text-foreground/70">
+              Our little collection of memories 📸 Click on any photo to see it in full size!
+            </p>
+          </div>
         </div>
 
         {/* Filter Categories */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10">
-          {categoryButtons.map((button) => (
-            <button
-              key={button.id}
-              className={`category-btn ${
-                activeCategory === button.id ? "active" : "bg-white hover:bg-primary hover:text-white"
-              } px-4 py-2 rounded-lg shadow-sm transition-colors`}
-              onClick={() => handleCategoryChange(button.id)}
-            >
-              {button.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {categoryButtons.map((button, index) => {
+            const Icon = button.icon;
+            return (
+              <motion.button
+                key={button.id}
+                className={`category-btn ${
+                  activeCategory === button.id ? "active" : ""
+                }`}
+                onClick={() => handleCategoryChange(button.id)}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -3 }}
+              >
+                <Icon className="h-4 w-4 mr-2" />
+                {button.label}
+              </motion.button>
+            )}
+          )}
         </div>
 
         {/* Photo Grid */}
@@ -87,28 +117,50 @@ const Gallery = () => {
           initial="hidden"
           animate="show"
         >
-          {filteredPhotos.map((photo) => (
-            <motion.div key={photo.id} variants={item}>
-              <PhotoCard photo={photo} onClick={setSelectedPhoto} />
-            </motion.div>
-          ))}
+          {filteredPhotos.length > 0 ? (
+            filteredPhotos.map((photo) => (
+              <motion.div key={photo.id} variants={item}>
+                <PhotoCard photo={photo} onClick={setSelectedPhoto} />
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-20">
+              <div className="bg-white rounded-xl p-6 border-2 border-dashed border-foreground/10 inline-block">
+                <Camera className="h-10 w-10 mx-auto text-primary/40 mb-3" />
+                <p className="text-foreground/60 font-heading text-lg">No photos in this category yet!</p>
+              </div>
+            </div>
+          )}
         </motion.div>
 
         {/* Load More Button */}
-        {showLoadMore && (
-          <div className="text-center mt-10">
+        {showLoadMore && filteredPhotos.length > 0 && (
+          <div className="text-center mt-12">
             <button
               onClick={handleLoadMore}
               disabled={isLoading}
-              className={`${
-                isLoading ? "bg-neutral-dark/50" : "bg-accent hover:bg-accent/90"
-              } text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg`}
+              className="relative group"
             >
-              {isLoading ? (
-                <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-              ) : (
-                "Load More Photos"
-              )}
+              <div className={`
+                ${isLoading ? "bg-foreground/20" : "bg-white hover:bg-primary/5"} 
+                text-foreground font-heading py-3 px-8 rounded-xl transition-all shadow-sm 
+                hover:shadow-md border-2 border-dashed border-primary/30
+              `}>
+                {isLoading ? (
+                  <div className="w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Camera className="h-5 w-5" />
+                    More Memories
+                  </span>
+                )}
+              </div>
+              <div className="absolute -top-3 -left-2 transform rotate-12 text-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                📸
+              </div>
+              <div className="absolute -bottom-2 -right-1 transform -rotate-6 text-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                💖
+              </div>
             </button>
           </div>
         )}

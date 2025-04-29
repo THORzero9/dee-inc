@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ComicPanel from "@/components/ComicPanel";
-import { Gift, Download } from "lucide-react";
+import { Gift, Download, Heart, Sparkles, Cake } from "lucide-react";
 
 const Surprise = () => {
   const [revealed, setRevealed] = useState(false);
@@ -16,25 +16,37 @@ const Surprise = () => {
   };
 
   return (
-    <section id="surprise" className="py-16 md:py-24 bg-gradient-to-b from-neutral-light to-white">
-      <div className="container mx-auto px-4">
+    <section id="surprise" className="py-16 md:py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5 relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-10 left-10 opacity-10">
+        <Cake className="h-20 w-20 text-primary" />
+      </div>
+      <div className="absolute bottom-10 right-10 opacity-10">
+        <Heart className="h-20 w-20 text-primary" />
+      </div>
+      
+      {/* Content */}
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="font-heading text-3xl md:text-4xl mb-3">Birthday Surprise</h2>
-          <p className="text-neutral-dark/70 max-w-2xl mx-auto">
-            A special gift I created just for you. Click the button below to reveal your birthday surprise!
+          <div className="relative inline-block mb-3">
+            <h2 className="font-heading text-3xl md:text-4xl text-primary">Birthday Surprise</h2>
+            <div className="absolute -bottom-2 left-4 right-4 h-2 bg-secondary/30 -z-10 rounded-full"></div>
+          </div>
+          <p className="text-foreground/70 max-w-2xl mx-auto">
+            A special gift I created just for you with all my heart! ✨
           </p>
         </motion.div>
 
         <div className="max-w-3xl mx-auto">
           <motion.div
-            className={`bg-white rounded-xl shadow-xl p-6 md:p-10 text-center comic-reveal ${
-              revealed ? "revealed" : ""
-            }`}
+            className={`bg-white rounded-2xl shadow-md p-6 md:p-8 text-center comic-reveal border-2 border-dashed ${
+              revealed ? "border-primary/30 revealed" : "border-secondary/30"
+            } relative`}
             initial={{ scale: 1, opacity: 1 }}
             animate={{ 
               scale: revealed ? [0.9, 1] : 1,
@@ -42,6 +54,10 @@ const Surprise = () => {
             }}
             transition={{ duration: 0.5 }}
           >
+            {/* Decorative paper clips */}
+            <div className="absolute -top-3 left-10 w-6 h-10 bg-primary/80 rounded-t-md"></div>
+            <div className="absolute -top-3 right-10 w-6 h-10 bg-secondary/80 rounded-t-md"></div>
+            
             <AnimatePresence mode="wait">
               {!revealed ? (
                 <motion.div
@@ -51,25 +67,47 @@ const Surprise = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="w-28 h-28 mx-auto mb-6 relative">
-                    <div className="absolute inset-0 bg-secondary/30 rounded-full animate-pulse-slow"></div>
+                  <div className="w-32 h-32 mx-auto mb-6 relative">
+                    <div className="absolute inset-0 bg-secondary/20 rounded-full animate-pulse-slow"></div>
                     <div
-                      className="absolute inset-3 bg-secondary/50 rounded-full animate-pulse-slow"
+                      className="absolute inset-4 bg-secondary/30 rounded-full animate-pulse-slow"
                       style={{ animationDelay: "0.3s" }}
                     ></div>
+                    <div className="absolute inset-8 bg-secondary/40 rounded-full animate-pulse-slow"
+                      style={{ animationDelay: "0.6s" }}></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <Gift className="h-12 w-12 text-primary" />
+                      <Gift className="h-14 w-14 text-primary animate-float" />
                     </div>
+                    
+                    {/* Decorative sparkles */}
+                    {[...Array(5)].map((_, i) => (
+                      <div 
+                        key={i}
+                        className="absolute animate-sparkle" 
+                        style={{
+                          top: `${Math.random() * 100}%`,
+                          left: `${Math.random() * 100}%`,
+                          animationDelay: `${Math.random() * 2}s`
+                        }}
+                      >
+                        <Sparkles className="h-4 w-4 text-accent" />
+                      </div>
+                    ))}
                   </div>
-                  <h3 className="font-heading text-2xl mb-4">Your Special Surprise Awaits</h3>
-                  <p className="text-neutral-dark/70 mb-8 max-w-md mx-auto">
-                    I've created something special just for your birthday. Are you ready to see it?
-                  </p>
+                  
+                  <h3 className="font-heading text-2xl mb-3 text-primary">Your Special Surprise Awaits</h3>
+                  <div className="bg-secondary/10 border border-dashed border-secondary/30 p-3 rounded-xl mb-6 max-w-md mx-auto">
+                    <p className="text-foreground/70">
+                      I've made something super special just for your birthday! It's a little comic about us. Ready to see it? 🎂
+                    </p>
+                  </div>
+                  
                   <button
                     onClick={handleReveal}
-                    className="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:scale-105"
+                    className="bg-primary hover:bg-primary/90 text-white font-heading py-3 px-8 rounded-xl transition-all shadow-sm hover:shadow-md transform hover:scale-105 hover:-translate-y-1 text-lg relative overflow-hidden group"
                   >
-                    Reveal My Surprise!
+                    <span className="relative z-10">Open My Gift! 🎁</span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   </button>
                 </motion.div>
               ) : (
@@ -79,14 +117,20 @@ const Surprise = () => {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  <h3 className="font-script text-3xl mb-6 text-primary">Happy Birthday, Love!</h3>
-                  <p className="text-neutral-dark/70 mb-8 max-w-lg mx-auto">
-                    I created this comic strip especially for you, inspired by all our special moments together.
-                  </p>
+                  <div className="relative inline-block mb-6">
+                    <h3 className="font-script text-4xl text-primary">Happy Birthday, Love!</h3>
+                    <div className="absolute -bottom-2 left-10 right-10 h-1 bg-primary/20 rounded-full"></div>
+                  </div>
+                  
+                  <div className="bg-primary/5 border border-dashed border-primary/20 p-3 rounded-xl mb-8 max-w-lg mx-auto">
+                    <p className="text-foreground/80">
+                      I made this little comic strip just for you, inspired by all our adorable moments together! Hope it makes you smile as much as you make me smile every day! 💕
+                    </p>
+                  </div>
 
-                  <div className="max-w-2xl mx-auto bg-neutral-light/50 p-4 rounded-xl">
+                  <div className="max-w-2xl mx-auto bg-card/30 p-6 rounded-xl border border-foreground/5">
                     {/* Comic Strip Panels */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <ComicPanel
                         title="Panel 1: How We Met"
                         color="accent"
@@ -99,7 +143,7 @@ const Surprise = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <ComicPanel
                         title="Panel 3: Our Adventures"
                         color="secondary"
@@ -114,18 +158,22 @@ const Surprise = () => {
                   </div>
 
                   <motion.div 
-                    className="mt-8"
+                    className="mt-10"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}
                   >
-                    <p className="font-script text-2xl text-primary mb-4">I love you!</p>
+                    <div className="relative inline-block mb-6">
+                      <p className="font-script text-3xl text-primary animate-wiggle">I love you so much! ❤️</p>
+                      <div className="absolute -bottom-1 left-4 right-4 h-1 bg-primary/20 rounded-full"></div>
+                    </div>
+                    
                     <button
                       onClick={handleDownload}
-                      className="bg-accent hover:bg-accent/90 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center justify-center mx-auto gap-2"
+                      className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-heading py-3 px-6 rounded-xl transition-all shadow-sm hover:shadow-md hover:-translate-y-1 flex items-center justify-center mx-auto gap-2 mt-4"
                     >
-                      <Download className="h-4 w-4" />
-                      Download Comic Strip
+                      <Download className="h-5 w-5" />
+                      Download Our Comic
                     </button>
                   </motion.div>
                 </motion.div>

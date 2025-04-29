@@ -23,55 +23,51 @@ const Header = () => {
         <nav className="mt-4 w-full md:mt-0 md:w-auto relative z-10">
           <ul className="flex flex-wrap md:flex-nowrap space-x-0 md:space-x-3 space-y-2 md:space-y-0">
             <li>
-              <Link href="/">
-                <a
-                  className={`block md:inline-block px-3 py-1 rounded-full ${
-                    location === "/" 
-                    ? "bg-primary/10 text-primary font-medium" 
-                    : "hover:bg-muted text-foreground/80 hover:text-primary"
-                  } transition-all font-heading text-lg`}
-                >
-                  Home
-                </a>
+              <Link 
+                href="/"
+                className={`block md:inline-block px-3 py-1 rounded-full ${
+                  location === "/" 
+                  ? "bg-primary/10 text-primary font-medium" 
+                  : "hover:bg-muted text-foreground/80 hover:text-primary"
+                } transition-all font-heading text-lg`}
+              >
+                Home
               </Link>
             </li>
             <li>
-              <Link href="/gallery">
-                <a
-                  className={`block md:inline-block px-3 py-1 rounded-full ${
-                    location === "/gallery" 
-                    ? "bg-primary/10 text-primary font-medium" 
-                    : "hover:bg-muted text-foreground/80 hover:text-primary"
-                  } transition-all font-heading text-lg`}
-                >
-                  Gallery
-                </a>
+              <Link 
+                href="/gallery"
+                className={`block md:inline-block px-3 py-1 rounded-full ${
+                  location === "/gallery" 
+                  ? "bg-primary/10 text-primary font-medium" 
+                  : "hover:bg-muted text-foreground/80 hover:text-primary"
+                } transition-all font-heading text-lg`}
+              >
+                Gallery
               </Link>
             </li>
             <li>
-              <Link href="/moments">
-                <a
-                  className={`block md:inline-block px-3 py-1 rounded-full ${
-                    location === "/moments" 
-                    ? "bg-primary/10 text-primary font-medium" 
-                    : "hover:bg-muted text-foreground/80 hover:text-primary"
-                  } transition-all font-heading text-lg`}
-                >
-                  Special Moments
-                </a>
+              <Link 
+                href="/moments"
+                className={`block md:inline-block px-3 py-1 rounded-full ${
+                  location === "/moments" 
+                  ? "bg-primary/10 text-primary font-medium" 
+                  : "hover:bg-muted text-foreground/80 hover:text-primary"
+                } transition-all font-heading text-lg`}
+              >
+                Special Moments
               </Link>
             </li>
             <li>
-              <Link href="/surprise">
-                <a
-                  className={`block md:inline-block px-3 py-1 rounded-full ${
-                    location === "/surprise" 
-                    ? "bg-secondary/20 text-secondary-foreground font-bold" 
-                    : "bg-secondary/10 text-secondary-foreground/80 hover:bg-secondary/20"
-                  } transition-all font-heading text-lg`}
-                >
-                  ✨ Birthday Surprise
-                </a>
+              <Link 
+                href="/surprise"
+                className={`block md:inline-block px-3 py-1 rounded-full ${
+                  location === "/surprise" 
+                  ? "bg-secondary/20 text-secondary-foreground font-bold" 
+                  : "bg-secondary/10 text-secondary-foreground/80 hover:bg-secondary/20"
+                } transition-all font-heading text-lg`}
+              >
+                ✨ Birthday Surprise
               </Link>
             </li>
           </ul>
