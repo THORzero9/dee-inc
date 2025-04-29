@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ComicPanel from "@/components/ComicPanel";
 import { Gift, Download, Heart, Sparkles, Cake } from "lucide-react";
+import comicStripImage from "@/assets/comic-strip.jpeg";
 
 const Surprise = () => {
   const [revealed, setRevealed] = useState(false);
@@ -11,8 +12,13 @@ const Surprise = () => {
   };
 
   const handleDownload = () => {
-    // In a real app, this would download the comic strip
-    alert("Your comic strip would download here in a real implementation!");
+    // Create a temporary link to download the image
+    const link = document.createElement('a');
+    link.href = comicStripImage;
+    link.download = 'our-comic-strip.jpeg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -128,32 +134,23 @@ const Surprise = () => {
                     </p>
                   </div>
 
-                  <div className="max-w-2xl mx-auto bg-card/30 p-6 rounded-xl border border-foreground/5">
-                    {/* Comic Strip Panels */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <ComicPanel
-                        title="Panel 1: How We Met"
-                        color="accent"
-                        description="Remember when you spilled coffee on my laptop? I was annoyed until I saw your smile..."
-                      />
-                      <ComicPanel
-                        title="Panel 2: First Date"
-                        color="primary"
-                        description="That Italian restaurant where we talked until they had to ask us to leave because they were closing..."
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <ComicPanel
-                        title="Panel 3: Our Adventures"
-                        color="secondary"
-                        description="All our trips and adventures, from getting lost hiking to that impromptu road trip..."
-                      />
-                      <ComicPanel
-                        title="Panel 4: Happy Birthday!"
-                        color="accent"
-                        description="Here's to another year of love, laughter, and creating beautiful memories together!"
-                      />
+                  <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl border-2 border-foreground/10 shadow-md">
+                    {/* Your custom comic strip */}
+                    <div className="relative">
+                      {/* Decorative tape corners */}
+                      <div className="absolute -top-3 -left-3 w-12 h-12 bg-primary/30 rotate-45 opacity-70"></div>
+                      <div className="absolute -top-3 -right-3 w-12 h-12 bg-secondary/30 rotate-45 opacity-70"></div>
+                      <div className="absolute -bottom-3 -left-3 w-12 h-12 bg-accent/30 rotate-45 opacity-70"></div>
+                      <div className="absolute -bottom-3 -right-3 w-12 h-12 bg-primary/30 rotate-45 opacity-70"></div>
+                      
+                      {/* Comic image with a slight rotation for a hand-placed feel */}
+                      <div className="transform rotate-[0.5deg] transition-transform hover:rotate-0 duration-500">
+                        <img 
+                          src={comicStripImage} 
+                          alt="Our Comic Strip Journey" 
+                          className="w-full h-auto rounded-md shadow-sm"
+                        />
+                      </div>
                     </div>
                   </div>
 
