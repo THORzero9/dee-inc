@@ -1,8 +1,23 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { db } from "./db";
+import * as schema from "@shared/schema";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  try {
+    // Initialize database and sample data
+    const dbStorage = storage as any;
+    if (typeof dbStorage.initializeData === 'function') {
+      console.log("[express] Initializing database with sample data...");
+      await dbStorage.initializeData();
+      console.log("[express] Database initialized successfully.");
+    }
+  } catch (error) {
+    console.error("[express] Error initializing database:", error);
+  }
+
   // API routes - Photo endpoints
   app.get("/api/photos", async (req, res) => {
     try {
