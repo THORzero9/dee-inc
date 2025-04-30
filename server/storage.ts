@@ -12,11 +12,13 @@ export interface IStorage {
   getAllPhotos(): Promise<Photo[]>;
   getPhoto(id: number): Promise<Photo | undefined>;
   createPhoto(photo: InsertPhoto): Promise<Photo>;
+  deletePhoto(id: number): Promise<void>;
   
   // Moment methods
   getAllMoments(): Promise<Moment[]>;
   getMoment(id: number): Promise<Moment | undefined>;
   createMoment(moment: InsertMoment): Promise<Moment>;
+  deleteMoment(id: number): Promise<void>;
 }
 
 // DatabaseStorage implementation using PostgreSQL/Drizzle
@@ -57,6 +59,10 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return photo;
   }
+  
+  async deletePhoto(id: number): Promise<void> {
+    await db.delete(photos).where(eq(photos.id, id));
+  }
 
   // Moment methods
   async getAllMoments(): Promise<Moment[]> {
@@ -74,6 +80,10 @@ export class DatabaseStorage implements IStorage {
       .values(insertMoment)
       .returning();
     return moment;
+  }
+  
+  async deleteMoment(id: number): Promise<void> {
+    await db.delete(moments).where(eq(moments.id, id));
   }
 
   // Initialize with sample data if tables are empty

@@ -44,6 +44,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch photo" });
     }
   });
+  
+  // Add new photo
+  app.post("/api/photos", async (req, res) => {
+    try {
+      const photo = req.body;
+      const newPhoto = await storage.createPhoto(photo);
+      res.status(201).json(newPhoto);
+    } catch (error) {
+      console.error("Error creating photo:", error);
+      res.status(500).json({ message: "Failed to create photo" });
+    }
+  });
+  
+  // Delete photo
+  app.delete("/api/photos/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // First check if photo exists
+      const photo = await storage.getPhoto(id);
+      if (!photo) {
+        return res.status(404).json({ message: "Photo not found" });
+      }
+      
+      await storage.deletePhoto(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting photo:", error);
+      res.status(500).json({ message: "Failed to delete photo" });
+    }
+  });
 
   // Special moments endpoints
   app.get("/api/moments", async (req, res) => {
@@ -69,6 +100,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching moment:", error);
       res.status(500).json({ message: "Failed to fetch moment" });
+    }
+  });
+  
+  // Add new moment
+  app.post("/api/moments", async (req, res) => {
+    try {
+      const moment = req.body;
+      const newMoment = await storage.createMoment(moment);
+      res.status(201).json(newMoment);
+    } catch (error) {
+      console.error("Error creating moment:", error);
+      res.status(500).json({ message: "Failed to create moment" });
+    }
+  });
+  
+  // Delete moment
+  app.delete("/api/moments/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // First check if moment exists
+      const moment = await storage.getMoment(id);
+      if (!moment) {
+        return res.status(404).json({ message: "Moment not found" });
+      }
+      
+      await storage.deleteMoment(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting moment:", error);
+      res.status(500).json({ message: "Failed to delete moment" });
     }
   });
 
