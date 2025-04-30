@@ -12,12 +12,14 @@ export interface IStorage {
   getAllPhotos(): Promise<Photo[]>;
   getPhoto(id: number): Promise<Photo | undefined>;
   createPhoto(photo: InsertPhoto): Promise<Photo>;
+  updatePhoto(id: number, photo: Partial<InsertPhoto>): Promise<Photo>;
   deletePhoto(id: number): Promise<void>;
   
   // Moment methods
   getAllMoments(): Promise<Moment[]>;
   getMoment(id: number): Promise<Moment | undefined>;
   createMoment(moment: InsertMoment): Promise<Moment>;
+  updateMoment(id: number, moment: Partial<InsertMoment>): Promise<Moment>;
   deleteMoment(id: number): Promise<void>;
 }
 
@@ -60,6 +62,15 @@ export class DatabaseStorage implements IStorage {
     return photo;
   }
   
+  async updatePhoto(id: number, updateData: Partial<InsertPhoto>): Promise<Photo> {
+    const [updatedPhoto] = await db
+      .update(photos)
+      .set(updateData)
+      .where(eq(photos.id, id))
+      .returning();
+    return updatedPhoto;
+  }
+  
   async deletePhoto(id: number): Promise<void> {
     await db.delete(photos).where(eq(photos.id, id));
   }
@@ -80,6 +91,15 @@ export class DatabaseStorage implements IStorage {
       .values(insertMoment)
       .returning();
     return moment;
+  }
+  
+  async updateMoment(id: number, updateData: Partial<InsertMoment>): Promise<Moment> {
+    const [updatedMoment] = await db
+      .update(moments)
+      .set(updateData)
+      .where(eq(moments.id, id))
+      .returning();
+    return updatedMoment;
   }
   
   async deleteMoment(id: number): Promise<void> {

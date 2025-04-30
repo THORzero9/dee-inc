@@ -75,6 +75,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete photo" });
     }
   });
+  
+  // Update photo
+  app.put("/api/photos/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      // First check if photo exists
+      const photo = await storage.getPhoto(id);
+      if (!photo) {
+        return res.status(404).json({ message: "Photo not found" });
+      }
+      
+      const updatedPhoto = await storage.updatePhoto(id, updateData);
+      res.json(updatedPhoto);
+    } catch (error) {
+      console.error("Error updating photo:", error);
+      res.status(500).json({ message: "Failed to update photo" });
+    }
+  });
 
   // Special moments endpoints
   app.get("/api/moments", async (req, res) => {
@@ -131,6 +151,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting moment:", error);
       res.status(500).json({ message: "Failed to delete moment" });
+    }
+  });
+  
+  // Update moment
+  app.put("/api/moments/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      // First check if moment exists
+      const moment = await storage.getMoment(id);
+      if (!moment) {
+        return res.status(404).json({ message: "Moment not found" });
+      }
+      
+      const updatedMoment = await storage.updateMoment(id, updateData);
+      res.json(updatedMoment);
+    } catch (error) {
+      console.error("Error updating moment:", error);
+      res.status(500).json({ message: "Failed to update moment" });
     }
   });
 

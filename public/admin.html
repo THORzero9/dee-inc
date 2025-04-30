@@ -49,6 +49,7 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
+      margin-right: 5px;
     }
     button:hover {
       background-color: #c23d7c;
@@ -89,6 +90,38 @@
     }
     .tab-content.active {
       display: block;
+    }
+    .button-group {
+      display: flex;
+      margin-top: 10px;
+    }
+    .edit-btn {
+      background-color: #4a90e2;
+    }
+    .edit-btn:hover {
+      background-color: #2a70c2;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+    .form-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .cancel-btn {
+      background-color: #95a5a6;
+    }
+    .cancel-btn:hover {
+      background-color: #7f8c8d;
+    }
+    /* Edit mode */
+    .editing {
+      border: 2px solid #4a90e2;
+      background-color: #f5f9ff;
     }
   </style>
 </head>
@@ -340,17 +373,66 @@
         const photosList = document.getElementById('photos-list');
         photosList.innerHTML = '';
         
+        let currentlyEditing = null; // Track which photo is being edited
+        
         photos.forEach(photo => {
           const photoItem = document.createElement('div');
           photoItem.className = 'photo-item';
+          photoItem.dataset.id = photo.id;
+          
+          // Create the display view
           photoItem.innerHTML = `
-            <h3>${photo.title}</h3>
-            <p><strong>Description:</strong> ${photo.description || 'No description'}</p>
-            <p><strong>Category:</strong> ${photo.category}</p>
-            <p><strong>Date:</strong> ${photo.date}</p>
-            <p><strong>Image URL:</strong> ${photo.url}</p>
-            <img src="${photo.url}" alt="${photo.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
-            <button class="delete-photo" data-id="${photo.id}">Delete</button>
+            <div class="display-view">
+              <h3>${photo.title}</h3>
+              <p><strong>Description:</strong> ${photo.description || 'No description'}</p>
+              <p><strong>Category:</strong> ${photo.category}</p>
+              <p><strong>Date:</strong> ${photo.date}</p>
+              <p><strong>Image URL:</strong> ${photo.url}</p>
+              <img src="${photo.url}" alt="${photo.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
+              <div class="button-group">
+                <button class="edit-btn edit-photo" data-id="${photo.id}">Edit</button>
+                <button class="delete-btn delete-photo" data-id="${photo.id}">Delete</button>
+              </div>
+            </div>
+            
+            <div class="edit-view" style="display:none;">
+              <form class="edit-photo-form">
+                <div class="form-group">
+                  <label>Title:</label>
+                  <input type="text" class="edit-title" value="${photo.title}" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Description:</label>
+                  <textarea class="edit-description">${photo.description || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label>URL:</label>
+                  <input type="text" class="edit-url" value="${photo.url}" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Category:</label>
+                  <select class="edit-category">
+                    <option value="dates" ${photo.category === 'dates' ? 'selected' : ''}>Dates</option>
+                    <option value="trips" ${photo.category === 'trips' ? 'selected' : ''}>Trips</option>
+                    <option value="everyday" ${photo.category === 'everyday' ? 'selected' : ''}>Everyday</option>
+                    <option value="special" ${photo.category === 'special' ? 'selected' : ''}>Special</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label>Date:</label>
+                  <input type="text" class="edit-date" value="${photo.date}" required>
+                </div>
+                
+                <div class="form-buttons">
+                  <button type="submit" class="save-photo-btn">Save Changes</button>
+                  <button type="button" class="cancel-btn cancel-edit">Cancel</button>
+                </div>
+              </form>
+            </div>
           `;
           photosList.appendChild(photoItem);
         });
@@ -378,6 +460,77 @@
             }
           });
         });
+        
+        // Add event listeners to edit buttons
+        document.querySelectorAll('.edit-photo').forEach(button => {
+          button.addEventListener('click', () => {
+            const id = button.dataset.id;
+            const photoItem = document.querySelector(`.photo-item[data-id="${id}"]`);
+            
+            // If a different photo is being edited, close that edit view first
+            if (currentlyEditing && currentlyEditing !== id) {
+              const previousItem = document.querySelector(`.photo-item[data-id="${currentlyEditing}"]`);
+              previousItem.querySelector('.display-view').style.display = 'block';
+              previousItem.querySelector('.edit-view').style.display = 'none';
+              previousItem.classList.remove('editing');
+            }
+            
+            // Toggle the edit view
+            photoItem.querySelector('.display-view').style.display = 'none';
+            photoItem.querySelector('.edit-view').style.display = 'block';
+            photoItem.classList.add('editing');
+            currentlyEditing = id;
+          });
+        });
+        
+        // Add event listeners to cancel buttons
+        document.querySelectorAll('.cancel-edit').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const photoItem = button.closest('.photo-item');
+            photoItem.querySelector('.display-view').style.display = 'block';
+            photoItem.querySelector('.edit-view').style.display = 'none';
+            photoItem.classList.remove('editing');
+            currentlyEditing = null;
+          });
+        });
+        
+        // Add event listeners to edit forms
+        document.querySelectorAll('.edit-photo-form').forEach(form => {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const photoItem = form.closest('.photo-item');
+            const id = photoItem.dataset.id;
+            
+            const updatedPhoto = {
+              title: form.querySelector('.edit-title').value,
+              description: form.querySelector('.edit-description').value,
+              url: form.querySelector('.edit-url').value,
+              category: form.querySelector('.edit-category').value,
+              date: form.querySelector('.edit-date').value
+            };
+            
+            try {
+              const response = await fetch(`/api/photos/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedPhoto)
+              });
+              
+              if (response.ok) {
+                alert('Photo updated successfully!');
+                fetchPhotos(); // Refresh the list
+              } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+              }
+            } catch (error) {
+              alert(`Error: ${error.message}`);
+            }
+          });
+        });
       } catch (error) {
         console.error('Error fetching photos:', error);
       }
@@ -392,18 +545,76 @@
         const momentsList = document.getElementById('moments-list');
         momentsList.innerHTML = '';
         
+        let currentlyEditing = null; // Track which moment is being edited
+        
         moments.forEach(moment => {
           const momentItem = document.createElement('div');
           momentItem.className = 'moment-item';
+          momentItem.dataset.id = moment.id;
+          
+          // Create the display view
           momentItem.innerHTML = `
-            <h3>${moment.title}</h3>
-            <p><strong>Description:</strong> ${moment.description}</p>
-            <p><strong>Date:</strong> ${moment.date}</p>
-            <p><strong>Tag:</strong> ${moment.tag}</p>
-            <p><strong>Tag Color:</strong> ${moment.tagColor}</p>
-            <p><strong>Image URL:</strong> ${moment.imageUrl}</p>
-            <img src="${moment.imageUrl}" alt="${moment.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
-            <button class="delete-moment" data-id="${moment.id}">Delete</button>
+            <div class="display-view">
+              <h3>${moment.title}</h3>
+              <p><strong>Description:</strong> ${moment.description}</p>
+              <p><strong>Date:</strong> ${moment.date}</p>
+              <p><strong>Tag:</strong> ${moment.tag}</p>
+              <p><strong>Tag Color:</strong> ${moment.tagColor}</p>
+              <p><strong>Image URL:</strong> ${moment.imageUrl}</p>
+              <img src="${moment.imageUrl}" alt="${moment.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
+              <div class="button-group">
+                <button class="edit-btn edit-moment" data-id="${moment.id}">Edit</button>
+                <button class="delete-btn delete-moment" data-id="${moment.id}">Delete</button>
+              </div>
+            </div>
+            
+            <div class="edit-view" style="display:none;">
+              <form class="edit-moment-form">
+                <div class="form-group">
+                  <label>Title:</label>
+                  <input type="text" class="edit-title" value="${moment.title}" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Description:</label>
+                  <textarea class="edit-description">${moment.description || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label>Image URL:</label>
+                  <input type="text" class="edit-imageUrl" value="${moment.imageUrl}" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Date:</label>
+                  <input type="text" class="edit-date" value="${moment.date}" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Tag:</label>
+                  <select class="edit-tag">
+                    <option value="First Date" ${moment.tag === 'First Date' ? 'selected' : ''}>First Date</option>
+                    <option value="Anniversary" ${moment.tag === 'Anniversary' ? 'selected' : ''}>Anniversary</option>
+                    <option value="Travel" ${moment.tag === 'Travel' ? 'selected' : ''}>Travel</option>
+                    <option value="Celebration" ${moment.tag === 'Celebration' ? 'selected' : ''}>Celebration</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label>Tag Color:</label>
+                  <select class="edit-tagColor">
+                    <option value="primary" ${moment.tagColor === 'primary' ? 'selected' : ''}>Primary (Pink)</option>
+                    <option value="secondary" ${moment.tagColor === 'secondary' ? 'selected' : ''}>Secondary (Purple)</option>
+                    <option value="accent" ${moment.tagColor === 'accent' ? 'selected' : ''}>Accent (Blue)</option>
+                  </select>
+                </div>
+                
+                <div class="form-buttons">
+                  <button type="submit" class="save-moment-btn">Save Changes</button>
+                  <button type="button" class="cancel-btn cancel-edit">Cancel</button>
+                </div>
+              </form>
+            </div>
           `;
           momentsList.appendChild(momentItem);
         });
@@ -428,6 +639,78 @@
               } catch (error) {
                 alert(`Error: ${error.message}`);
               }
+            }
+          });
+        });
+        
+        // Add event listeners to edit buttons
+        document.querySelectorAll('.edit-moment').forEach(button => {
+          button.addEventListener('click', () => {
+            const id = button.dataset.id;
+            const momentItem = document.querySelector(`.moment-item[data-id="${id}"]`);
+            
+            // If a different moment is being edited, close that edit view first
+            if (currentlyEditing && currentlyEditing !== id) {
+              const previousItem = document.querySelector(`.moment-item[data-id="${currentlyEditing}"]`);
+              previousItem.querySelector('.display-view').style.display = 'block';
+              previousItem.querySelector('.edit-view').style.display = 'none';
+              previousItem.classList.remove('editing');
+            }
+            
+            // Toggle the edit view
+            momentItem.querySelector('.display-view').style.display = 'none';
+            momentItem.querySelector('.edit-view').style.display = 'block';
+            momentItem.classList.add('editing');
+            currentlyEditing = id;
+          });
+        });
+        
+        // Add event listeners to cancel buttons
+        document.querySelectorAll('.cancel-edit').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const momentItem = button.closest('.moment-item');
+            momentItem.querySelector('.display-view').style.display = 'block';
+            momentItem.querySelector('.edit-view').style.display = 'none';
+            momentItem.classList.remove('editing');
+            currentlyEditing = null;
+          });
+        });
+        
+        // Add event listeners to edit forms
+        document.querySelectorAll('.edit-moment-form').forEach(form => {
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const momentItem = form.closest('.moment-item');
+            const id = momentItem.dataset.id;
+            
+            const updatedMoment = {
+              title: form.querySelector('.edit-title').value,
+              description: form.querySelector('.edit-description').value,
+              imageUrl: form.querySelector('.edit-imageUrl').value,
+              date: form.querySelector('.edit-date').value,
+              tag: form.querySelector('.edit-tag').value,
+              tagColor: form.querySelector('.edit-tagColor').value
+            };
+            
+            try {
+              const response = await fetch(`/api/moments/${id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedMoment)
+              });
+              
+              if (response.ok) {
+                alert('Moment updated successfully!');
+                fetchMoments(); // Refresh the list
+              } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+              }
+            } catch (error) {
+              alert(`Error: ${error.message}`);
             }
           });
         });
