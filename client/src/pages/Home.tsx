@@ -21,8 +21,8 @@ const Home = () => {
             <div className="md:flex">
               <div className="md:w-1/2 relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1623619984836-9d218833dcbb?auto=format&fit=crop&w=800&q=80" 
-                  alt="Cozy home interior with warm lighting and comfortable furniture" 
+                  src="https://images.unsplash.com/photo-1657311294409-01a74a6f7e5c?auto=format&fit=crop&w=800&q=80" 
+                  alt="Couple holding hands on scenic background" 
                   className="w-full h-64 md:h-full object-cover"
                   loading="lazy"
                 />
@@ -45,16 +45,21 @@ const Home = () => {
                 </div>
                 
                 <div className="flex items-center mb-6">
-                  <div className="w-14 h-14 rounded-full overflow-hidden mr-4 border-2 border-primary p-0.5">
-                    <img 
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" 
-                      alt="Profile picture" 
-                      className="w-full h-full object-cover rounded-full"
-                    />
+                  <div className="w-14 h-14 rounded-full overflow-hidden mr-4 border-2 border-primary p-0.5 bg-gray-100 flex items-center justify-center">
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      className="w-10 h-10 text-primary/40"
+                      stroke="currentColor" 
+                      strokeWidth="1"
+                    >
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
                   </div>
                   <div className="text-foreground/80">
                     <p className="font-medium">Made with love by</p>
-                    <p className="font-script text-2xl text-primary">Your Name</p>
+                    <p className="font-script text-2xl text-primary">Bhaswat</p>
                   </div>
                 </div>
                 
@@ -83,9 +88,9 @@ const Home = () => {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: Calendar, value: "365", label: "Days Together", color: "primary" },
-                { icon: MapPin, value: "12", label: "Adventures", color: "accent" },
-                { icon: Heart, value: "42", label: "Date Nights", color: "secondary" },
+                { icon: Calendar, value: "731", label: "Days Together", color: "primary" },
+                { icon: MapPin, value: "8", label: "Adventures", color: "accent" },
+                { icon: Heart, value: "36", label: "Date Nights", color: "secondary" },
                 { icon: Camera, value: "∞", label: "Memories", color: "primary" }
               ].map((stat, index) => (
                 <motion.div 
