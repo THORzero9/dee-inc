@@ -3,6 +3,14 @@ import { motion } from "framer-motion";
 import { Heart, Calendar, Camera, MapPin } from "lucide-react";
 
 const Home = () => {
+  // Calculate days since March 2, 2022
+  const calculateDaysSince = () => {
+    const startDate = new Date(2022, 2, 2); // Month is 0-indexed, so 2 = March
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays.toString();
+  };
   return (
     <section id="home" className="py-12 md:py-20">
       <div className="container mx-auto px-4">
@@ -88,7 +96,7 @@ const Home = () => {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: Calendar, value: "731", label: "Days Together", color: "primary" },
+                { icon: Calendar, value: calculateDaysSince(), label: "Days Together", color: "primary" },
                 { icon: MapPin, value: "8", label: "Adventures", color: "accent" },
                 { icon: Heart, value: "36", label: "Date Nights", color: "secondary" },
                 { icon: Camera, value: "∞", label: "Memories", color: "primary" }
