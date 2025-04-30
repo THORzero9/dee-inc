@@ -1,8 +1,23 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Heart, Calendar, Camera, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+
+interface Photo {
+  id: number;
+  title: string;
+  description: string;
+  url: string;
+  category: string;
+  date: string;
+}
 
 const Home = () => {
+  const [stats, setStats] = useState({
+    adventures: "3",
+    dateNights: "1",
+  });
+
   // Calculate days since March 2, 2022
   const calculateDaysSince = () => {
     const startDate = new Date(2022, 2, 2); // Month is 0-indexed, so 2 = March
@@ -11,6 +26,33 @@ const Home = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays.toString();
   };
+  
+  // Fetch photo data for stats
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch("/api/photos");
+        if (response.ok) {
+          const photos = await response.json() as Photo[];
+          
+          // Count adventures (trips category)
+          const adventures = photos.filter((photo: Photo) => photo.category === "trips").length;
+          
+          // Count date nights (dates category)
+          const dateNights = photos.filter((photo: Photo) => photo.category === "dates").length;
+          
+          setStats({
+            adventures: adventures.toString(),
+            dateNights: dateNights.toString()
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching photo stats:", error);
+      }
+    }
+    
+    fetchStats();
+  }, []);
   return (
     <section id="home" className="py-12 md:py-20">
       <div className="container mx-auto px-4">
@@ -97,8 +139,8 @@ const Home = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { icon: Calendar, value: calculateDaysSince(), label: "Days Together", color: "primary" },
-                { icon: MapPin, value: "8", label: "Adventures", color: "accent" },
-                { icon: Heart, value: "36", label: "Date Nights", color: "secondary" },
+                { icon: MapPin, value: stats.adventures, label: "Adventures", color: "accent" },
+                { icon: Heart, value: stats.dateNights, label: "Date Nights", color: "secondary" },
                 { icon: Camera, value: "∞", label: "Memories", color: "primary" }
               ].map((stat, index) => (
                 <motion.div 
