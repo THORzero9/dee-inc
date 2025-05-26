@@ -1,0 +1,89 @@
+10:11:41 AM: build-image version: 4ec50c0cf4c115815bb3546389ae2d9d46c94317 (noble)
+10:11:41 AM: buildbot version: cd1a41e5abe93e9dde72e1185c95f7c91e0c77f2
+10:11:41 AM: Fetching cached dependencies
+10:11:41 AM: Failed to fetch cache, continuing with build
+10:11:41 AM: Starting to prepare the repo for build
+10:11:41 AM: No cached dependencies found. Cloning fresh repo
+10:11:41 AM: git clone --filter=blob:none https://github.com/THORzero9/dee-inc
+10:11:41 AM: Preparing Git Reference refs/heads/release
+10:11:44 AM: Custom publish path detected. Proceeding with the specified path: 'client/dist'
+10:11:44 AM: Starting to install dependencies
+10:11:44 AM: Python version set to 3.13.3
+10:11:45 AM: Ruby version set to 3.4.3
+10:11:45 AM: Go version set to 1.24.3
+10:11:45 AM: Using PHP version 8.3
+10:11:46 AM: Downloading and installing node v18.20.8...
+10:11:46 AM: Downloading https://nodejs.org/dist/v18.20.8/node-v18.20.8-linux-x64.tar.xz...
+10:11:46 AM: Computing checksum with sha256sum
+10:11:46 AM: Checksums matched!
+10:11:48 AM: Now using node v18.20.8 (npm v10.8.2)
+10:11:49 AM: Enabling Node.js Corepack
+10:11:49 AM: Started restoring cached build plugins
+10:11:49 AM: Finished restoring cached build plugins
+10:11:49 AM: Successfully installed dependencies
+10:11:49 AM: Starting build script
+10:11:50 AM: Detected 2 framework(s)
+10:11:50 AM: "hydrogen" at version "unknown"
+10:11:50 AM: "remix" at version "unknown"
+10:11:50 AM: Section completed: initializing
+10:11:51 AM: ​
+10:11:51 AM: Netlify Build                                                 
+10:11:51 AM: ────────────────────────────────────────────────────────────────
+10:11:51 AM: ​
+10:11:51 AM: ❯ Version
+10:11:51 AM:   @netlify/build 33.2.0
+10:11:51 AM: ​
+10:11:51 AM: ❯ Flags
+10:11:51 AM:   accountId: 68114a5f159ccd41cd16f8bf
+10:11:51 AM:   baseRelDir: true
+10:11:51 AM:   buildId: 6833f0d13ead6610f059ed45
+10:11:51 AM:   deployId: 6833f0d13ead6610f059ed47
+10:11:51 AM: ​
+10:11:51 AM: ❯ Current directory
+10:11:51 AM:   /opt/build/repo/client
+10:11:51 AM: ​
+10:11:51 AM: ❯ Config file
+10:11:51 AM:   /opt/build/repo/netlify.toml
+10:11:51 AM: ​
+10:11:51 AM: ❯ Context
+10:11:51 AM:   production
+10:11:51 AM: ​
+10:11:51 AM: build.command from netlify.toml                               
+10:11:51 AM: ────────────────────────────────────────────────────────────────
+10:11:51 AM: ​
+10:11:51 AM: $ npm run build
+10:11:51 AM: > rest-express@1.0.0 build
+10:11:51 AM: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+10:11:51 AM: sh: 1: vite: not found
+10:11:51 AM: ​
+10:11:51 AM: "build.command" failed                                        
+10:11:51 AM: ────────────────────────────────────────────────────────────────
+10:11:51 AM: ​
+10:11:51 AM:   Error message
+10:11:51 AM:   Command failed with exit code 127: npm run build (https://ntl.fyi/exit-code-127)
+10:11:51 AM: ​
+10:11:51 AM:   Error location
+10:11:51 AM:   In build.command from netlify.toml:
+10:11:51 AM:   npm run build
+10:11:51 AM: ​
+10:11:51 AM:   Resolved config
+10:11:51 AM:   build:
+10:11:51 AM:     base: /opt/build/repo/client
+10:11:51 AM:     command: npm run build
+10:11:51 AM:     commandOrigin: config
+10:11:51 AM:     environment:
+10:11:51 AM:       - NODE_VERSION
+10:11:51 AM:     publish: /opt/build/repo/client/dist
+10:11:51 AM:     publishOrigin: config
+10:11:51 AM:   redirects:
+10:11:52 AM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+10:11:52 AM:     - from: /api/*
+      status: 200
+      to: https://REPLACE-WITH-YOUR-RENDER-APP-NAME.onrender.com/api/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+10:11:52 AM: Build failed due to a user error: Build script returned non-zero exit code: 2
+10:11:52 AM: Failing build: Failed to build site
+10:11:52 AM: Finished processing build request in 11.195s
