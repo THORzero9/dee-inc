@@ -1,0 +1,84 @@
+10:14:29 AM: Netlify Build                                                 
+10:14:29 AM: ────────────────────────────────────────────────────────────────
+10:14:29 AM: ​
+10:14:29 AM: ❯ Version
+10:14:29 AM:   @netlify/build 33.2.0
+10:14:29 AM: ​
+10:14:29 AM: ❯ Flags
+10:14:29 AM:   accountId: 68114a5f159ccd41cd16f8bf
+10:14:29 AM:   baseRelDir: true
+10:14:29 AM:   buildId: 6833f17617bab2785b5347d4
+10:14:29 AM:   deployId: 6833f17617bab2785b5347d6
+10:14:29 AM: ​
+10:14:29 AM: ❯ Current directory
+10:14:29 AM:   /opt/build/repo/client
+10:14:29 AM: ​
+10:14:29 AM: ❯ Config file
+10:14:29 AM:   /opt/build/repo/netlify.toml
+10:14:29 AM: ​
+10:14:29 AM: ❯ Context
+10:14:29 AM:   production
+10:14:29 AM: ​
+10:14:29 AM: build.command from netlify.toml                               
+10:14:29 AM: ────────────────────────────────────────────────────────────────
+10:14:29 AM: ​
+10:14:29 AM: $ npm install && vite build
+10:14:37 AM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+10:14:32 AM: npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+10:14:32 AM: npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+10:14:36 AM: added 489 packages, and audited 490 packages in 7s
+10:14:36 AM: 64 packages are looking for funding
+10:14:36 AM:   run `npm fund` for details
+10:14:36 AM: 7 moderate severity vulnerabilities
+10:14:36 AM: To address issues that do not require attention, run:
+10:14:36 AM:   npm audit fix
+10:14:36 AM: To address all issues (including breaking changes), run:
+10:14:36 AM:   npm audit fix --force
+10:14:36 AM: Run `npm audit` for details.
+10:14:36 AM: vite v5.4.14 building for production...
+10:14:36 AM: transforming...
+10:14:36 AM: ✓ 6 modules transformed.
+10:14:36 AM: x Build failed in 266ms
+10:14:36 AM: error during build:
+10:14:36 AM: [vite]: Rollup failed to resolve import "@/components/ui/toaster" from "/opt/build/repo/client/src/App.tsx".
+10:14:36 AM: This is most likely unintended because it can break your application at runtime.
+10:14:36 AM: If you do want to externalize this module explicitly add it to
+10:14:36 AM: `build.rollupOptions.external`
+10:14:36 AM:     at viteWarn (file:///opt/build/repo/node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:65747:17)
+10:14:36 AM:     at onRollupWarning (file:///opt/build/repo/node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:65779:5)
+10:14:36 AM:     at onwarn (file:///opt/build/repo/node_modules/vite/dist/node/chunks/dep-CHZK6zbr.js:65442:7)
+10:14:36 AM:     at file:///opt/build/repo/node_modules/rollup/dist/es/shared/node-entry.js:19452:13
+10:14:36 AM:     at Object.logger [as onLog] (file:///opt/build/repo/node_modules/rollup/dist/es/shared/node-entry.js:21178:9)
+10:14:36 AM:     at ModuleLoader.handleInvalidResolvedId (file:///opt/build/repo/node_modules/rollup/dist/es/shared/node-entry.js:20067:26)
+10:14:36 AM:     at file:///opt/build/repo/node_modules/rollup/dist/es/shared/node-entry.js:20025:26
+10:14:36 AM: ​
+10:14:36 AM: "build.command" failed                                        
+10:14:36 AM: ────────────────────────────────────────────────────────────────
+10:14:36 AM: ​
+10:14:36 AM:   Error message
+10:14:36 AM:   Command failed with exit code 1: npm install && vite build (https://ntl.fyi/exit-code-1)
+10:14:36 AM: ​
+10:14:36 AM:   Error location
+10:14:36 AM:   In build.command from netlify.toml:
+10:14:36 AM:   npm install && vite build
+10:14:36 AM: ​
+10:14:36 AM:   Resolved config
+10:14:36 AM:   build:
+10:14:36 AM:     base: /opt/build/repo/client
+10:14:36 AM:     command: npm install && vite build
+10:14:36 AM:     commandOrigin: config
+10:14:36 AM:     environment:
+10:14:36 AM:       - NODE_VERSION
+10:14:36 AM:     publish: /opt/build/repo/client/dist
+10:14:36 AM:     publishOrigin: config
+10:14:36 AM:   redirects:
+10:14:37 AM:     - from: /api/*
+      status: 200
+      to: https://dee-inc-api.onrender.com/api/:splat
+    - from: /*
+      status: 200
+      to: /index.html
+  redirectsOrigin: config
+10:14:37 AM: Build failed due to a user error: Build script returned non-zero exit code: 2
+10:14:37 AM: Failing build: Failed to build site
+10:14:37 AM: Finished processing build request in 19.893s
