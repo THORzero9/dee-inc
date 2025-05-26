@@ -1,0 +1,51 @@
+2025-05-26T03:56:38.422984688Z ==> Cloning from https://github.com/THORzero9/dee-inc
+2025-05-26T03:56:47.257947597Z ==> Checking out commit 421052986a619d4cf8f2432a8604ff0c0b1e7b18 in branch release
+2025-05-26T03:56:54.626874601Z ==> Using Node.js version 22.14.0 (default)
+2025-05-26T03:56:54.659315343Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2025-05-26T03:56:57.342223619Z ==> Using Bun version 1.1.0 (default)
+2025-05-26T03:56:57.34226308Z ==> Docs on specifying a bun version: https://render.com/docs/bun-version
+2025-05-26T03:56:57.39340555Z ==> Running build command 'npm install'...
+2025-05-26T03:57:04.766560024Z 
+2025-05-26T03:57:04.766589825Z added 402 packages, and audited 403 packages in 7s
+2025-05-26T03:57:04.766604515Z 
+2025-05-26T03:57:04.766610835Z 56 packages are looking for funding
+2025-05-26T03:57:04.766620295Z   run `npm fund` for details
+2025-05-26T03:57:04.777345227Z 
+2025-05-26T03:57:04.777365588Z 2 moderate severity vulnerabilities
+2025-05-26T03:57:04.777369768Z 
+2025-05-26T03:57:04.777374388Z To address all issues, run:
+2025-05-26T03:57:04.777377978Z   npm audit fix
+2025-05-26T03:57:04.777381348Z 
+2025-05-26T03:57:04.777384818Z Run `npm audit` for details.
+2025-05-26T03:57:12.69676021Z ==> Uploading build...
+2025-05-26T03:57:25.346463474Z ==> Uploaded in 9.4s. Compression took 3.2s
+2025-05-26T03:57:25.404580691Z ==> Build successful 🎉
+2025-05-26T03:57:37.021464896Z ==> Deploying...
+2025-05-26T03:57:58.00989783Z ==> Running 'npx tsx server/production.ts'
+2025-05-26T03:58:27.613462858Z ==> Your service is live 🎉
+2025-05-26T03:58:24.218185223Z [express] Initializing database with sample data...
+2025-05-26T03:58:24.810913445Z Production server running on port 10000
+2025-05-26T03:58:25.19919694Z [express] Error initializing database: error: relation "photos" does not exist
+2025-05-26T03:58:25.199224661Z     at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1345:74
+2025-05-26T03:58:25.199230791Z     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-05-26T03:58:25.199235531Z     at async NeonPreparedQuery.execute (/opt/render/project/src/node_modules/src/neon-serverless/session.ts:102:18)
+2025-05-26T03:58:25.199239501Z     at async DatabaseStorage.initializeData (/opt/render/project/src/server/storage.ts:112:28)
+2025-05-26T03:58:25.199246401Z     at async registerRoutes (/opt/render/project/src/server/routes.ts:14:7) {
+2025-05-26T03:58:25.199250161Z   length: 105,
+2025-05-26T03:58:25.199254402Z   severity: 'ERROR',
+2025-05-26T03:58:25.199258002Z   code: '42P01',
+2025-05-26T03:58:25.199262312Z   detail: undefined,
+2025-05-26T03:58:25.199266252Z   hint: undefined,
+2025-05-26T03:58:25.199270392Z   position: '83',
+2025-05-26T03:58:25.199274622Z   internalPosition: undefined,
+2025-05-26T03:58:25.199278482Z   internalQuery: undefined,
+2025-05-26T03:58:25.199282292Z   where: undefined,
+2025-05-26T03:58:25.199288162Z   schema: undefined,
+2025-05-26T03:58:25.199292622Z   table: undefined,
+2025-05-26T03:58:25.199297133Z   column: undefined,
+2025-05-26T03:58:25.199301273Z   dataType: undefined,
+2025-05-26T03:58:25.199305283Z   constraint: undefined,
+2025-05-26T03:58:25.199308923Z   file: 'parse_relation.c',
+2025-05-26T03:58:25.199312523Z   line: '1449',
+2025-05-26T03:58:25.199315973Z   routine: 'parserOpenTable'
+2025-05-26T03:58:25.199319463Z }
