@@ -10,11 +10,11 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://your-netlify-site.netlify.app' // Replace with your actual Netlify URL
+    'https://REPLACE-WITH-YOUR-NETLIFY-SITE.netlify.app' // Replace with your actual Netlify URL
   ];
   
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+  if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   
