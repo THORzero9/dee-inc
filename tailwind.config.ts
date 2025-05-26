@@ -3,11 +3,8 @@ import type { Config } from "tailwindcss";
 export default {
   darkMode: ["class"],
   content: [
-    './index.html', // Add this line
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}', // Assuming you have an 'app' folder with JSX/TSX
-    './src/**/*.{ts,tsx}', // This is a good catch-all for anything else in src
+    './index.html',             // Add this line
+    './src/**/*.{js,ts,jsx,tsx}', // This will cover everything in src, including pages and components
   ],
   theme: {
     extend: {
