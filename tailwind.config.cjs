@@ -1,10 +1,11 @@
-import type { Config } from "tailwindcss";
+// client/tailwind.config.cjs
 
-export default {
+/** @type {import('tailwindcss').Config} */
+const config = {
   darkMode: ["class"],
   content: [
-    './index.html',             // Add this line
-    './src/**/*.{js,ts,jsx,tsx}', // This will cover everything in src, including pages and components
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -90,4 +91,6 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-} satisfies Config;
+};
+
+module.exports = config;
