@@ -1,0 +1,65 @@
+2025-05-26T03:50:58.346186147Z ==> Cloning from https://github.com/THORzero9/dee-inc
+2025-05-26T03:51:04.393042793Z ==> Checking out commit 657d9e46dfcfadaaa0b741109b4776462dfc2776 in branch release
+2025-05-26T03:51:06.467672927Z ==> Using Node.js version 22.14.0 (default)
+2025-05-26T03:51:06.493035406Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2025-05-26T03:51:08.338739751Z ==> Using Bun version 1.1.0 (default)
+2025-05-26T03:51:08.338760932Z ==> Docs on specifying a bun version: https://render.com/docs/bun-version
+2025-05-26T03:51:08.384961998Z ==> Running build command 'npm install'...
+2025-05-26T03:51:14.451213724Z 
+2025-05-26T03:51:14.451242365Z added 402 packages, and audited 403 packages in 6s
+2025-05-26T03:51:14.451254896Z 
+2025-05-26T03:51:14.451260466Z 56 packages are looking for funding
+2025-05-26T03:51:14.451266336Z   run `npm fund` for details
+2025-05-26T03:51:14.461829207Z 
+2025-05-26T03:51:14.461852298Z 2 moderate severity vulnerabilities
+2025-05-26T03:51:14.461856899Z 
+2025-05-26T03:51:14.461862769Z To address all issues, run:
+2025-05-26T03:51:14.461867019Z   npm audit fix
+2025-05-26T03:51:14.46187067Z 
+2025-05-26T03:51:14.46187465Z Run `npm audit` for details.
+2025-05-26T03:51:17.529967676Z ==> Uploading build...
+2025-05-26T03:51:28.436348197Z ==> Uploaded in 8.2s. Compression took 2.7s
+2025-05-26T03:51:28.491177493Z ==> Build successful 🎉
+2025-05-26T03:51:35.78214934Z ==> Deploying...
+2025-05-26T03:51:56.709357795Z ==> Running 'npx tsx server/index.ts'
+2025-05-26T03:52:15.701874988Z 
+2025-05-26T03:52:15.701910269Z node:internal/modules/run_main:122
+2025-05-26T03:52:15.701917459Z     triggerUncaughtException(
+2025-05-26T03:52:15.701921869Z     ^
+2025-05-26T03:52:15.701937039Z Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from /opt/render/project/src/vite.config.ts
+2025-05-26T03:52:15.70194436Z     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:268:9)
+2025-05-26T03:52:15.70194996Z     at packageResolve (node:internal/modules/esm/resolve:768:81)
+2025-05-26T03:52:15.70195426Z     at moduleResolve (node:internal/modules/esm/resolve:854:18)
+2025-05-26T03:52:15.70195803Z     at defaultResolve (node:internal/modules/esm/resolve:984:11)
+2025-05-26T03:52:15.70196168Z     at nextResolve (node:internal/modules/esm/hooks:748:28)
+2025-05-26T03:52:15.70196554Z     at resolveBase (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231533503:2:3212)
+2025-05-26T03:52:15.70197087Z     at resolveDirectory (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231533503:2:3584)
+2025-05-26T03:52:15.70197519Z     at resolveTsPaths (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231533503:2:4073)
+2025-05-26T03:52:15.7019796Z     at async resolve (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231533503:2:4441)
+2025-05-26T03:52:15.70198452Z     at async nextResolve (node:internal/modules/esm/hooks:748:22) {
+2025-05-26T03:52:15.701988751Z   code: 'ERR_MODULE_NOT_FOUND'
+2025-05-26T03:52:15.701992561Z }
+2025-05-26T03:52:15.701996311Z 
+2025-05-26T03:52:15.702000131Z Node.js v22.14.0
+2025-05-26T03:52:17.212609816Z ==> Exited with status 1
+2025-05-26T03:52:17.37590419Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2025-05-26T03:52:22.652129116Z ==> Running 'npx tsx server/index.ts'
+2025-05-26T03:52:39.15366784Z 
+2025-05-26T03:52:39.154290402Z node:internal/modules/run_main:122
+2025-05-26T03:52:39.154301533Z     triggerUncaughtException(
+2025-05-26T03:52:39.154305963Z     ^
+2025-05-26T03:52:39.154327073Z Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from /opt/render/project/src/vite.config.ts
+2025-05-26T03:52:39.154333863Z     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:268:9)
+2025-05-26T03:52:39.154338373Z     at packageResolve (node:internal/modules/esm/resolve:768:81)
+2025-05-26T03:52:39.154363984Z     at moduleResolve (node:internal/modules/esm/resolve:854:18)
+2025-05-26T03:52:39.154368424Z     at defaultResolve (node:internal/modules/esm/resolve:984:11)
+2025-05-26T03:52:39.154372244Z     at nextResolve (node:internal/modules/esm/hooks:748:28)
+2025-05-26T03:52:39.154376324Z     at resolveBase (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231557452:2:3212)
+2025-05-26T03:52:39.154380974Z     at resolveDirectory (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231557452:2:3584)
+2025-05-26T03:52:39.154384754Z     at resolveTsPaths (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231557452:2:4073)
+2025-05-26T03:52:39.154388634Z     at async resolve (file:///opt/render/.cache/_npx/fd45a72a545557e9/node_modules/tsx/dist/esm/index.mjs?1748231557452:2:4441)
+2025-05-26T03:52:39.154393245Z     at async nextResolve (node:internal/modules/esm/hooks:748:22) {
+2025-05-26T03:52:39.154397545Z   code: 'ERR_MODULE_NOT_FOUND'
+2025-05-26T03:52:39.154401195Z }
+2025-05-26T03:52:39.154405075Z 
+2025-05-26T03:52:39.154409175Z Node.js v22.14.0

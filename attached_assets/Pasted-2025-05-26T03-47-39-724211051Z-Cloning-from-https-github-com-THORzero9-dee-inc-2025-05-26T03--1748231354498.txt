@@ -1,0 +1,67 @@
+2025-05-26T03:47:39.724211051Z ==> Cloning from https://github.com/THORzero9/dee-inc
+2025-05-26T03:47:56.339537627Z ==> Checking out commit 657d9e46dfcfadaaa0b741109b4776462dfc2776 in branch release
+2025-05-26T03:47:58.910123589Z ==> Using Node.js version 22.14.0 (default)
+2025-05-26T03:47:58.936476668Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2025-05-26T03:48:00.797787809Z ==> Using Bun version 1.1.0 (default)
+2025-05-26T03:48:00.79780497Z ==> Docs on specifying a bun version: https://render.com/docs/bun-version
+2025-05-26T03:48:00.844280014Z ==> Running build command 'npm install'...
+2025-05-26T03:48:07.868885798Z 
+2025-05-26T03:48:07.868909929Z added 402 packages, and audited 403 packages in 7s
+2025-05-26T03:48:07.868920959Z 
+2025-05-26T03:48:07.868960391Z 56 packages are looking for funding
+2025-05-26T03:48:07.868995522Z   run `npm fund` for details
+2025-05-26T03:48:07.879774299Z 
+2025-05-26T03:48:07.912184555Z 2 moderate severity vulnerabilities
+2025-05-26T03:48:07.912190916Z 
+2025-05-26T03:48:07.912195326Z To address all issues, run:
+2025-05-26T03:48:07.912198356Z   npm audit fix
+2025-05-26T03:48:07.912201496Z 
+2025-05-26T03:48:07.912206006Z Run `npm audit` for details.
+2025-05-26T03:48:11.008584543Z ==> Uploading build...
+2025-05-26T03:48:22.541524031Z ==> Uploaded in 8.5s. Compression took 3.0s
+2025-05-26T03:48:22.587112831Z ==> Build successful 🎉
+2025-05-26T03:48:26.279791763Z ==> Deploying...
+2025-05-26T03:48:47.372309445Z ==> Running 'npm start'
+2025-05-26T03:48:48.377071067Z 
+2025-05-26T03:48:48.377099857Z > rest-express@1.0.0 start
+2025-05-26T03:48:48.377105018Z > NODE_ENV=production node dist/index.js
+2025-05-26T03:48:48.377107308Z 
+2025-05-26T03:48:48.577193162Z node:internal/modules/cjs/loader:1228
+2025-05-26T03:48:48.577217262Z   throw err;
+2025-05-26T03:48:48.577220542Z   ^
+2025-05-26T03:48:48.577223022Z 
+2025-05-26T03:48:48.577227303Z Error: Cannot find module '/opt/render/project/src/dist/index.js'
+2025-05-26T03:48:48.577230113Z     at Function._resolveFilename (node:internal/modules/cjs/loader:1225:15)
+2025-05-26T03:48:48.577233113Z     at Function._load (node:internal/modules/cjs/loader:1055:27)
+2025-05-26T03:48:48.577235433Z     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-05-26T03:48:48.577238023Z     at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+2025-05-26T03:48:48.577241413Z     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
+2025-05-26T03:48:48.577245323Z     at node:internal/main/run_main_module:36:49 {
+2025-05-26T03:48:48.577248803Z   code: 'MODULE_NOT_FOUND',
+2025-05-26T03:48:48.577251983Z   requireStack: []
+2025-05-26T03:48:48.577254663Z }
+2025-05-26T03:48:48.577256873Z 
+2025-05-26T03:48:48.577259223Z Node.js v22.14.0
+2025-05-26T03:48:49.953455957Z ==> Exited with status 1
+2025-05-26T03:48:50.113546892Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+2025-05-26T03:48:54.590789484Z ==> Running 'npm start'
+2025-05-26T03:48:55.494212354Z 
+2025-05-26T03:48:55.494235994Z > rest-express@1.0.0 start
+2025-05-26T03:48:55.494240194Z > NODE_ENV=production node dist/index.js
+2025-05-26T03:48:55.494241954Z 
+2025-05-26T03:48:55.697196235Z node:internal/modules/cjs/loader:1228
+2025-05-26T03:48:55.697213846Z   throw err;
+2025-05-26T03:48:55.697216556Z   ^
+2025-05-26T03:48:55.697218646Z 
+2025-05-26T03:48:55.697221406Z Error: Cannot find module '/opt/render/project/src/dist/index.js'
+2025-05-26T03:48:55.697275437Z     at Function._resolveFilename (node:internal/modules/cjs/loader:1225:15)
+2025-05-26T03:48:55.697278477Z     at Function._load (node:internal/modules/cjs/loader:1055:27)
+2025-05-26T03:48:55.697280797Z     at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-05-26T03:48:55.697283277Z     at wrapModuleLoad (node:internal/modules/cjs/loader:220:24)
+2025-05-26T03:48:55.697286067Z     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)
+2025-05-26T03:48:55.697290717Z     at node:internal/main/run_main_module:36:49 {
+2025-05-26T03:48:55.697296888Z   code: 'MODULE_NOT_FOUND',
+2025-05-26T03:48:55.697300068Z   requireStack: []
+2025-05-26T03:48:55.697302298Z }
+2025-05-26T03:48:55.697304358Z 
+2025-05-26T03:48:55.697306548Z Node.js v22.14.0
