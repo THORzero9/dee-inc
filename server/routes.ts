@@ -7,6 +7,17 @@ import { db } from "./db";
 import * as schema from "@shared/schema";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 
+/**
+ * Registers API and authentication routes on the provided Express application and returns an HTTP server instance.
+ *
+ * Sets up endpoints for user authentication, photo management, and special moments, including protected routes that require authentication. Initializes the database with sample data if supported by the storage layer.
+ *
+ * @param app - The Express application instance to register routes on.
+ * @returns An HTTP server instance wrapping the configured Express app.
+ *
+ * @remark
+ * Authentication is enforced on all modifying routes (POST, PUT, DELETE) for photos and moments. The function attempts to initialize the database with sample data if the storage layer provides an `initializeData` method.
+ */
 export async function registerRoutes(app: Express): Promise<Server> {
   try {
     // Initialize database and sample data
