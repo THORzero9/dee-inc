@@ -1,7 +1,6 @@
 [build]
-  base = "client"
-  publish = "dist"
-  command = "npm install && vite build"
+  publish = "dist/public"
+  command = "npm install && npm run build:client"
 
 [build.environment]
   NODE_VERSION = "18"

@@ -15,9 +15,13 @@ const app = express();
 
 // CORS configuration for production deployment
 app.use((req, res, next) => {
+  // FIXME: CORS settings are currently permissive for development.
+  // For production, restrict allowedOrigins to only your deployed frontend and backend URLs.
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
+    'https://dee-inc-api.onrender.com', // The user-provided Render URL
+    '// TODO: Add your actual Netlify frontend URL here once deployed e.g. https://your-site.netlify.app',
     'https://REPLACE-WITH-YOUR-NETLIFY-SITE.netlify.app' // Replace with your actual Netlify URL
   ];
   
