@@ -21,7 +21,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://REPLACE-WITH-YOUR-NETLIFY-SITE.netlify.app' 
+    'https://deeluvgallery.netlify.app'
   ];
   
   const origin = req.headers.origin;
