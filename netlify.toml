@@ -15,3 +15,13 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/photos/*"
+  to = "https://dee-inc-api.onrender.com/photos/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/moments/*"
+  to = "https://dee-inc-api.onrender.com/moments/:splat"
+  status = 200
