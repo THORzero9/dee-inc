@@ -1,7 +1,12 @@
 import express from "express";
+import session from 'express-session';
+import passport from 'passport';
+import connectPgSimple from 'connect-pg-simple';
 import { registerRoutes } from "./routes";
 import path from "path";
-import { db } from "./db";
+import { db, pool } from "./db"; // Modified to import pool
+import { storage } from "./storage";
+import './auth'; // For registering passport strategies
 import { sql } from "drizzle-orm";
 
 const app = express();
@@ -66,6 +71,47 @@ app.get("/health", (req, res) => {
 // Initialize database and start server
 async function startServer() {
   await initializeDatabase();
+
+  // Session Management Setup
+  const PgStore = connectPgSimple(session);
+  const sessionStore = new PgStore({
+    pool: pool, // Ensure 'pool' is correctly imported and available
+    tableName: 'user_sessions',
+    createTableIfMissing: true,
+  });
+
+  app.use(session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || 'DEFEND_YOUR_CASTLE_WITH_A_STRONG_SECRET', // Fallback is insecure, user MUST set env var
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // Important for production over HTTPS
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      sameSite: 'lax' // Recommended for CSRF protection
+    }
+  }));
+
+  // Passport Initialization
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Passport User Serialization and Deserialization
+  passport.serializeUser((user: any, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(async (id: number, done) => {
+    try {
+      // 'storage' should be imported from './storage'
+      const user = await storage.getUser(Number(id)); 
+      if (!user) return done(null, false);
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
+  });
   
   // Register API routes
   await registerRoutes(app);
