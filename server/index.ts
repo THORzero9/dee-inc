@@ -16,12 +16,14 @@ const app = express();
 // CORS configuration for production deployment
 app.use((req, res, next) => {
   // FIXME: CORS settings are currently permissive for development.
-  // For production, restrict allowedOrigins to only your deployed frontend URLs.
+  // For production, restrict allowedOrigins to only your deployed frontend URLs
+
   // TODO: Add your actual Netlify frontend URL here once deployed (e.g., 'https://your-site.netlify.app')
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
     'https://deeluvgallery.netlify.app'
+
   ];
   
   const origin = req.headers.origin;
