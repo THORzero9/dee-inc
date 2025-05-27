@@ -16,6 +16,7 @@ const app = express();
 // CORS configuration for production deployment
 app.use((req, res, next) => {
   // FIXME: CORS settings are currently permissive for development.
+
   // For production, restrict allowedOrigins to only your deployed frontend URLs.
   const allowedOrigins = [
     'http://localhost:3000',
