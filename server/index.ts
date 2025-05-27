@@ -72,7 +72,8 @@ passport.serializeUser((user: any, done) => {
 
 passport.deserializeUser(async (id: number, done) => {
   try {
-    const user = await storage.getUser(id); // Assuming storage.getUser(id) exists and returns a user object or null
+    const user = await storage.getUser(Number(id));
+    if (!user) return done(null, false);
     done(null, user);
   } catch (err) {
     done(err);
