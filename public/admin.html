@@ -305,8 +305,10 @@
 
     async function checkAuthStatus() {
       try {
-        const response = await fetch('/api/auth/status');
-        // No credentials needed for status check as it relies on the session cookie
+-        const response = await fetch('/api/auth/status');
++        const response = await fetch('/api/auth/status', {
++          credentials: 'include'
++        });
         const data = await response.json();
 
         if (data.isAuthenticated) {
@@ -331,7 +333,6 @@
         logoutButton.style.display = 'none';
       }
     }
-
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value;
