@@ -126,12 +126,30 @@
   </style>
 </head>
 <body>
-  <h1>Photo and Moment Management</h1>
-  
-  <div class="note">
+  <div id="login-section" class="container" style="display: block;">
+    <h2>Login</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" id="login-button">Login</button>
+      <p id="login-error" style="color: red;"></p>
+    </form>
+  </div>
+
+  <div id="main-content" style="display: none;">
+    <button id="logout-button" style="display: none; float: right; margin-bottom: 10px;">Logout</button>
+    <h1>Photo and Moment Management</h1>
+    
+    <div class="note">
     <h3>Important Instructions</h3>
-    <p>1. First, upload your photos to the website using the Replit file explorer.</p>
-    <p>2. Put photos in the /public/photos folder and moments in the /public/moments folder.</p>
+    <p>1. First, ensure your photo files are uploaded to the server in the correct directories (see step 2).</p>
+    <p>2. Ensure photos are placed in the /public/photos folder and moments in the /public/moments folder.</p>
     <p>3. Once uploaded, refer to them with file paths like: /photos/your-photo.jpg</p>
     <p>4. Use the forms below to add, view, or delete photos and special moments.</p>
   </div>
@@ -173,7 +191,7 @@
         
         <div class="form-group">
           <label for="photo-date">Date:</label>
-          <input type="text" id="photo-date" placeholder="June 15, 2023" required>
+          <input type="date" id="photo-date" required>
         </div>
         
         <button type="submit">Add Photo</button>
@@ -207,7 +225,7 @@
         
         <div class="form-group">
           <label for="moment-date">Date:</label>
-          <input type="text" id="moment-date" placeholder="June 15, 2023" required>
+          <input type="date" id="moment-date" required>
         </div>
         
         <div class="form-group">
@@ -245,26 +263,26 @@
       
       <h3>How to Upload Photos</h3>
       <ol>
-        <li>In the Replit file explorer, navigate to the <code>/public</code> folder.</li>
+        <li>Using your development tools or hosting platform's file manager, navigate to the project's <code>public</code> folder (this is where publicly accessible static files are stored).</li>
         <li>Inside you'll see <code>/photos</code> and <code>/moments</code> folders.</li>
-        <li>Click on one of these folders.</li>
-        <li>Click the "Upload file" button or drag and drop your photos directly.</li>
+        <li>Select the target folder (either <code>photos</code> or <code>moments</code>).</li>
+        <li>Upload your image files into the selected folder. The specific steps for uploading will depend on your tools or hosting environment.</li>
         <li>Wait for the upload to complete.</li>
       </ol>
       
       <h3>Adding Photos to the Gallery</h3>
       <ol>
-        <li>After uploading your photos to <code>/public/photos</code>, go to the Photos tab.</li>
+        <li>After uploading your photos to the <code>/public/photos</code> directory on the server, go to the Photos tab on this admin page.</li>
         <li>Fill in the form with the photo details.</li>
-        <li>For the URL field, enter <code>/photos/filename.jpg</code> (replace filename.jpg with your actual filename).</li>
+        <li>For the URL field, enter the correct path, e.g., <code>/photos/filename.jpg</code> (replace filename.jpg with your actual filename).</li>
         <li>Click "Add Photo" to save it to the database.</li>
       </ol>
       
       <h3>Adding Special Moments</h3>
       <ol>
-        <li>After uploading your photos to <code>/public/moments</code>, go to the Moments tab.</li>
+        <li>After uploading your photos to the <code>/public/moments</code> directory on the server, go to the Moments tab on this admin page.</li>
         <li>Fill in the form with the moment details.</li>
-        <li>For the Image URL field, enter <code>/moments/filename.jpg</code> (replace filename.jpg with your actual filename).</li>
+        <li>For the Image URL field, enter the correct path, e.g., <code>/moments/filename.jpg</code> (replace filename.jpg with your actual filename).</li>
         <li>Click "Add Moment" to save it to the database.</li>
       </ol>
       
@@ -276,8 +294,84 @@
       </ul>
     </div>
   </div>
+  </div> <!-- Closing main-content div -->
 
   <script>
+    const loginSection = document.getElementById('login-section');
+    const mainContent = document.getElementById('main-content');
+    const logoutButton = document.getElementById('logout-button');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+
+    async function checkAuthStatus() {
+      try {
+-        const response = await fetch('/api/auth/status');
++        const response = await fetch('/api/auth/status', {
++          credentials: 'include'
++        });
+        const data = await response.json();
+
+        if (data.isAuthenticated) {
+          loginSection.style.display = 'none';
+          mainContent.style.display = 'block';
+          logoutButton.style.display = 'block';
+          // Optionally display username: document.getElementById('username-display').textContent = data.user.username;
+          fetchPhotos(); // Load data now that user is authenticated
+          fetchMoments();
+        } else {
+          loginSection.style.display = 'block';
+          mainContent.style.display = 'none';
+          logoutButton.style.display = 'none';
+          // Clear any sensitive data if needed
+          document.getElementById('photos-list').innerHTML = '';
+          document.getElementById('moments-list').innerHTML = '';
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        loginSection.style.display = 'block'; // Default to login on error
+        mainContent.style.display = 'none';
+        logoutButton.style.display = 'none';
+      }
+    }
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      loginError.textContent = '';
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          checkAuthStatus(); // Refresh UI based on new auth state
+        } else {
+          loginError.textContent = data.message || 'Login failed. Please try again.';
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        loginError.textContent = 'An error occurred during login.';
+      }
+    });
+
+    logoutButton.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/auth/logout', { method: 'POST' });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          checkAuthStatus(); // Refresh UI
+        } else {
+          alert('Logout failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('An error occurred during logout.');
+      }
+    });
+
     // Tab switching logic
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -291,10 +385,21 @@
     
     // Fetch all photos and moments when the page loads
     document.addEventListener('DOMContentLoaded', () => {
-      fetchPhotos();
-      fetchMoments();
+      checkAuthStatus();
+      // fetchPhotos(); // Moved to checkAuthStatus
+      // fetchMoments(); // Moved to checkAuthStatus
     });
     
+    // Helper function to handle unauthorized responses
+    async function handleUnauthorized(response) {
+      if (response.status === 401) {
+        alert('Session expired or unauthorized. Please log in again.');
+        checkAuthStatus(); // Re-evaluate auth state and redirect to login
+        return true; // Indicates that the request was handled (unauthorized)
+      }
+      return false; // Indicates that the request was not handled by this function
+    }
+
     // Photo form submission
     document.getElementById('photo-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -316,6 +421,8 @@
           body: JSON.stringify(photo)
         });
         
+        if (await handleUnauthorized(response)) return;
+
         if (response.ok) {
           alert('Photo added successfully!');
           document.getElementById('photo-form').reset();
@@ -325,7 +432,8 @@
           alert(`Error: ${error.message}`);
         }
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        console.error('Error adding photo:', error); // Log for debugging
+        alert(`Error: ${error.message || 'Could not add photo.'}`);
       }
     });
     
@@ -351,6 +459,8 @@
           body: JSON.stringify(moment)
         });
         
+        if (await handleUnauthorized(response)) return;
+
         if (response.ok) {
           alert('Moment added successfully!');
           document.getElementById('moment-form').reset();
@@ -360,7 +470,8 @@
           alert(`Error: ${error.message}`);
         }
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        console.error('Error adding moment:', error); // Log for debugging
+        alert(`Error: ${error.message || 'Could not add moment.'}`);
       }
     });
     
@@ -368,6 +479,16 @@
     async function fetchPhotos() {
       try {
         const response = await fetch('/api/photos');
+        // GET requests to /api/photos are public, so 401 check is not strictly needed here
+        // but if it were a protected GET, it would be:
+        // if (await handleUnauthorized(response)) return; 
+        if (!response.ok) { // Handle other errors for public GETs
+            const error = await response.json();
+            console.error(`Error fetching photos: ${error.message}`);
+            // Potentially clear the list or show a user-friendly message
+            // document.getElementById('photos-list').innerHTML = '<p>Could not load photos.</p>';
+            return; 
+        }
         const photos = await response.json();
         
         const photosList = document.getElementById('photos-list');
@@ -386,7 +507,7 @@
               <h3>${photo.title}</h3>
               <p><strong>Description:</strong> ${photo.description || 'No description'}</p>
               <p><strong>Category:</strong> ${photo.category}</p>
-              <p><strong>Date:</strong> ${photo.date}</p>
+              <p><strong>Date:</strong> ${photo.date ? new Date(photo.date).toLocaleDateString() : 'N/A'}</p>
               <p><strong>Image URL:</strong> ${photo.url}</p>
               <img src="${photo.url}" alt="${photo.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
               <div class="button-group">
@@ -424,7 +545,7 @@
                 
                 <div class="form-group">
                   <label>Date:</label>
-                  <input type="text" class="edit-date" value="${photo.date}" required>
+                  <input type="date" class="edit-date" value="${photo.date ? photo.date.split('T')[0] : ''}" required>
                 </div>
                 
                 <div class="form-buttons">
@@ -447,6 +568,8 @@
                   method: 'DELETE'
                 });
                 
+                if (await handleUnauthorized(response)) return;
+
                 if (response.ok) {
                   alert('Photo deleted successfully!');
                   fetchPhotos();
@@ -455,7 +578,8 @@
                   alert(`Error: ${error.message}`);
                 }
               } catch (error) {
-                alert(`Error: ${error.message}`);
+                console.error('Error deleting photo:', error);
+                alert(`Error: ${error.message || 'Could not delete photo.'}`);
               }
             }
           });
@@ -519,6 +643,8 @@
                 body: JSON.stringify(updatedPhoto)
               });
               
+              if (await handleUnauthorized(response)) return;
+              
               if (response.ok) {
                 alert('Photo updated successfully!');
                 fetchPhotos(); // Refresh the list
@@ -527,7 +653,8 @@
                 alert(`Error: ${error.message}`);
               }
             } catch (error) {
-              alert(`Error: ${error.message}`);
+              console.error('Error updating photo:', error);
+              alert(`Error: ${error.message || 'Could not update photo.'}`);
             }
           });
         });
@@ -540,6 +667,14 @@
     async function fetchMoments() {
       try {
         const response = await fetch('/api/moments');
+        // Similar to fetchPhotos, GET /api/moments is public
+        // if (await handleUnauthorized(response)) return;
+        if (!response.ok) {
+            const error = await response.json();
+            console.error(`Error fetching moments: ${error.message}`);
+            // document.getElementById('moments-list').innerHTML = '<p>Could not load moments.</p>';
+            return;
+        }
         const moments = await response.json();
         
         const momentsList = document.getElementById('moments-list');
@@ -557,7 +692,7 @@
             <div class="display-view">
               <h3>${moment.title}</h3>
               <p><strong>Description:</strong> ${moment.description}</p>
-              <p><strong>Date:</strong> ${moment.date}</p>
+              <p><strong>Date:</strong> ${moment.date ? new Date(moment.date).toLocaleDateString() : 'N/A'}</p>
               <p><strong>Tag:</strong> ${moment.tag}</p>
               <p><strong>Tag Color:</strong> ${moment.tagColor}</p>
               <p><strong>Image URL:</strong> ${moment.imageUrl}</p>
@@ -587,7 +722,7 @@
                 
                 <div class="form-group">
                   <label>Date:</label>
-                  <input type="text" class="edit-date" value="${moment.date}" required>
+                  <input type="date" class="edit-date" value="${moment.date ? moment.date.split('T')[0] : ''}" required>
                 </div>
                 
                 <div class="form-group">
@@ -629,6 +764,8 @@
                   method: 'DELETE'
                 });
                 
+                if (await handleUnauthorized(response)) return;
+
                 if (response.ok) {
                   alert('Moment deleted successfully!');
                   fetchMoments();
@@ -637,7 +774,8 @@
                   alert(`Error: ${error.message}`);
                 }
               } catch (error) {
-                alert(`Error: ${error.message}`);
+                console.error('Error deleting moment:', error);
+                alert(`Error: ${error.message || 'Could not delete moment.'}`);
               }
             }
           });
@@ -702,6 +840,8 @@
                 body: JSON.stringify(updatedMoment)
               });
               
+              if (await handleUnauthorized(response)) return;
+
               if (response.ok) {
                 alert('Moment updated successfully!');
                 fetchMoments(); // Refresh the list
@@ -710,7 +850,8 @@
                 alert(`Error: ${error.message}`);
               }
             } catch (error) {
-              alert(`Error: ${error.message}`);
+              console.error('Error updating moment:', error);
+              alert(`Error: ${error.message || 'Could not update moment.'}`);
             }
           });
         });

@@ -9,7 +9,7 @@ export const photos = pgTable("photos", {
   description: text("description"),
   url: text("url").notNull(),
   category: text("category").notNull(), // dates, trips, everyday, special
-  date: text("date").notNull(),
+  date: timestamp("date", { mode: 'string' }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -27,7 +27,7 @@ export const moments = pgTable("moments", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
-  date: text("date").notNull(),
+  date: timestamp("date", { mode: 'string' }).notNull(),
   tag: text("tag").notNull(), // First Date, Anniversary, Travel, Celebration
   tagColor: text("tag_color").notNull(), // primary, secondary, accent, etc.
   createdAt: timestamp("created_at").defaultNow(),
