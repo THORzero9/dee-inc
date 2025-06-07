@@ -1,0 +1,36 @@
+steps:
+  # Step 1: Install npm dependencies
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install', '--frozen-lockfile'] 
+    id: 'Install Dependencies'
+
+  # Step 2: Build the application
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+    id: 'Build Application'
+
+  # Step 3: Deploy to Cloud Run using gcloud
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'deegallery-api' 
+      - '--source'
+      - '.' 
+      - '--region'
+      - 'asia-south1' 
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated' 
+      - '--project'
+      - '${PROJECT_ID}' 
+      - '--set-env-vars'
+      - '^##^NODE_ENV=production##DATABASE_URL=${_DATABASE_URL}##SESSION_SECRET=${_SESSION_SECRET}'
+    id: 'Deploy to Cloud Run'
+
+substitutions:
+  _DATABASE_URL: 'your-render-db-connection-string' # Default/placeholder, will be overridden by trigger
+  _SESSION_SECRET: 'a-default-secret-if-not-overridden' # Default/placeholder, will be overridden by trigger
+
+timeout: '1200s'
