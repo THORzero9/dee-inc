@@ -1,6 +1,7 @@
 import { Photo } from "@shared/schema";
 import { useState } from "react";
 import { Calendar, Heart } from "lucide-react";
+import { getFullImageUrl } from "@/lib/utils";
 
 interface PhotoCardProps {
   photo: Photo;
@@ -30,7 +31,7 @@ const PhotoCard = ({ photo, onClick }: PhotoCardProps) => {
           </div>
         )}
         <img 
-          src={photo.url} 
+          src={getFullImageUrl(photo.url)}
           alt={photo.title} 
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
             loaded ? 'opacity-100' : 'opacity-0'

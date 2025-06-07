@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { photos, moments, insertPhotoSchema, insertMomentSchema } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 
 /**
  * This script helps you update the photos and moments in the database.
@@ -23,6 +23,44 @@ export async function updateAllPhotos(newPhotos: any[]) {
     return true;
   } catch (error) {
     console.error("Error updating photos:", error);
+    return false;
+  }
+}
+
+// Add a new photo if it doesn't exist
+export async function addPhotoIfNotExists(photoData: any) {
+  try {
+    const validatedPhoto = insertPhotoSchema.parse(photoData);
+    const existing = await db.select({ value: count() }).from(photos).where(eq(photos.url, validatedPhoto.url));
+    if (existing[0].value === 0) {
+      await db.insert(photos).values(validatedPhoto);
+      console.log(`Successfully added new photo: ${validatedPhoto.url}`);
+      return true;
+    } else {
+      console.log(`Photo already exists: ${validatedPhoto.url}`);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error adding photo if not exists:", error);
+    return false;
+  }
+}
+
+// Add a new moment if it doesn't exist
+export async function addMomentIfNotExists(momentData: any) {
+  try {
+    const validatedMoment = insertMomentSchema.parse(momentData);
+    const existing = await db.select({ value: count() }).from(moments).where(eq(moments.imageUrl, validatedMoment.imageUrl));
+    if (existing[0].value === 0) {
+      await db.insert(moments).values(validatedMoment);
+      console.log(`Successfully added new moment: ${validatedMoment.imageUrl}`);
+      return true;
+    } else {
+      console.log(`Moment already exists: ${validatedMoment.imageUrl}`);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error adding moment if not exists:", error);
     return false;
   }
 }

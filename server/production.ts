@@ -118,7 +118,7 @@ async function startServer() {
 
   // Serve static files in production
   const publicPath = path.join(process.cwd(), 'public');
-  app.use('/public', express.static(publicPath));
+  app.use('/public', express.static(publicPath)); // Restored
 
   // For production, serve a simple status page instead of the full frontend
   app.get('/', (req, res) => {

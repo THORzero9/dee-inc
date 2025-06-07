@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Moment } from "@shared/schema";
 import { motion } from "framer-motion";
 import { Calendar, Heart, MapPin, Star } from "lucide-react";
+import { getFullImageUrl } from "@/lib/utils";
 
 const getIconByTag = (tag: string) => {
   switch (tag) {
@@ -86,7 +87,7 @@ const SpecialMoments = () => {
                     <div className="relative">
                       <div className="pb-[56.25%]">
                         <img
-                          src={moment.imageUrl}
+                          src={getFullImageUrl(moment.imageUrl)}
                           alt={moment.title}
                           className="absolute inset-0 w-full h-full object-cover"
                           loading="lazy"
