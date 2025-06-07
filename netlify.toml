@@ -1,7 +1,7 @@
 [build]
-  base = "client"
-  publish = "dist"
-  command = "npm install && vite build"
+  base = "."
+  publish = "dist/public"
+  command = "npm install && npm run build:client"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -14,4 +14,14 @@
 [[redirects]]
   from = "/*"
   to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/photos/*"
+  to = "https://dee-inc-api.onrender.com/photos/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/moments/*"
+  to = "https://dee-inc-api.onrender.com/moments/:splat"
   status = 200

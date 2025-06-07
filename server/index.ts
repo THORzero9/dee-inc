@@ -1,4 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from 'express-session';
+import passport from 'passport';
+// LocalStrategy will be used in auth.ts, not directly here.
+// import { Strategy as LocalStrategy } from 'passport-local'; 
+import './auth'; // Ensures LocalStrategy is registered
+import connectPgSimple from 'connect-pg-simple';
+import { pool } from "./db"; // Correctly importing the pg pool
+import { storage } from "./storage"; // Importing storage for user serialization/deserialization
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
@@ -7,10 +15,13 @@ const app = express();
 
 // CORS configuration for production deployment
 app.use((req, res, next) => {
+  // FIXME: CORS settings are currently permissive for development.
+
+  // For production, restrict allowedOrigins to only your deployed frontend URLs.
   const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://REPLACE-WITH-YOUR-NETLIFY-SITE.netlify.app' // Replace with your actual Netlify URL
+    'https://deeluvgallery.netlify.app' 
   ];
   
   const origin = req.headers.origin;
@@ -32,6 +43,45 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(process.cwd(), "public")));
+
+// Session Management Setup
+const PgStore = connectPgSimple(session);
+const sessionStore = new PgStore({
+  pool: pool, // Using the imported pool from db.ts
+  tableName: 'user_sessions',
+  createTableIfMissing: true,
+});
+
+app.use(session({
+  store: sessionStore,
+  secret: process.env.SESSION_SECRET || 'your-very-secure-secret-placeholder', // Placeholder secret
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+  }
+}));
+
+// Passport Initialization
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport User Serialization and Deserialization
+passport.serializeUser((user: any, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id: number, done) => {
+  try {
+    const user = await storage.getUser(Number(id));
+    if (!user) return done(null, false);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
