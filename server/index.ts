@@ -1,8 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from 'express-session';
 import passport from 'passport';
-// LocalStrategy will be used in auth.ts, not directly here.
-// import { Strategy as LocalStrategy } from 'passport-local'; 
 import './auth'; // Ensures LocalStrategy is registered
 import connectPgSimple from 'connect-pg-simple';
 import { pool } from "./db"; // Correctly importing the pg pool
@@ -13,15 +11,12 @@ import path from "path";
 
 const app = express();
 
-// CORS configuration for production deployment
+// CORS configuration to allow requests from your Netlify frontend
 app.use((req, res, next) => {
-  // FIXME: CORS settings are currently permissive for development.
-
-  // For production, restrict allowedOrigins to only your deployed frontend URLs.
   const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://deeluvgallery.netlify.app' 
+    'http://localhost:3000', // Local dev
+    'http://localhost:5173', // Vite default dev port
+    'https://deeluvgallery.netlify.app' // Your Netlify site
   ];
   
   const origin = req.headers.origin;
@@ -34,27 +29,25 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
+    return res.sendStatus(200);
   }
+  
+  next();
 });
 
+// Standard middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(process.cwd(), "public")));
 
 // Session Management Setup
 const PgStore = connectPgSimple(session);
-const sessionStore = new PgStore({
-  pool: pool, // Using the imported pool from db.ts
-  tableName: 'user_sessions',
-  createTableIfMissing: true,
-});
-
 app.use(session({
-  store: sessionStore,
-  secret: process.env.SESSION_SECRET || 'your-very-secure-secret-placeholder', // Placeholder secret
+  store: new PgStore({
+    pool: pool,
+    tableName: 'user_sessions',
+    createTableIfMissing: true,
+  }),
+  secret: process.env.SESSION_SECRET || 'a-default-dev-secret-that-is-not-secure',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -68,7 +61,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Passport User Serialization and Deserialization
+// Passport User Serialization/Deserialization
 passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
@@ -76,72 +69,45 @@ passport.serializeUser((user: any, done) => {
 passport.deserializeUser(async (id: number, done) => {
   try {
     const user = await storage.getUser(Number(id));
-    if (!user) return done(null, false);
-    done(null, user);
+    done(null, user || false);
   } catch (err) {
     done(err);
   }
 });
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
+// --- Server Startup Logic ---
 (async () => {
+  // Register all API routes from routes.ts
   const server = await registerRoutes(app);
 
+  // General error handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
     res.status(status).json({ message });
-    throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Differentiate between development and production
+  if (process.env.NODE_ENV === "development") {
+    // In development, setup Vite to serve the client
+    log("Running in development mode, setting up Vite...");
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // In production, the server is API-only. The client is on Netlify.
+    // Add a root endpoint for health checks.
+    app.get("/", (req, res) => {
+      res.status(200).json({ status: "ok", message: "Dee Inc API is running" });
+    });
+    log("Running in production mode.");
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
+  // Use the PORT environment variable from Google Cloud Run, with a fallback for local dev
+  const port = process.env.PORT || 8080;
+  
   server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
+    port: Number(port),
+    host: "0.0.0.0", // Listen on all network interfaces
   }, () => {
-    log(`serving on port ${port}`);
+    log(`Server listening on port ${port}`);
   });
 })();

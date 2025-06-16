@@ -1,6 +1,6 @@
 [build]
   base = "."
-  publish = "dist/public"
+  publish = "client/dist"
   command = "npm install && npm run build:client"
 
 [build.environment]
