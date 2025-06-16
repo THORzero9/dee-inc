@@ -1,34 +1,47 @@
 steps:
-  # Step 1: Install npm dependencies
+  # Step 1: Install all project dependencies
   - name: 'gcr.io/cloud-builders/npm'
-    args: ['install'] 
+    args: ['install']
     id: 'Install Dependencies'
 
-  # Step 2: Build the application
+  # Step 2: Build the server code using the script from package.json
   - name: 'gcr.io/cloud-builders/npm'
-    args: ['run', 'build']
-    id: 'Build Application'
+    args: ['run', 'build:server']
+    id: 'Build Server'
+  
+  # Step 3: Run database migrations as a dedicated build step
+  # This makes the DATABASE_URL secret available only to this step.
+  - name: 'gcr.io/cloud-builders/npm'
+    id: 'Run Database Migrations'
+    entrypoint: 'npm'
+    args: ['run', 'db:migrate']
+    secretEnv: ['DATABASE_URL']
 
-  # Step 3: Deploy to Cloud Run using gcloud
+  # Step 4: Deploy to Cloud Run only after migrations are successful
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    id: 'Deploy to Cloud Run'
+    entrypoint: 'gcloud'
     args:
       - 'run'
       - 'deploy'
-      - 'deegallery-api' 
+      - 'deegallery-api'
       - '--source'
-      - '.' 
+      - '.'
       - '--region'
-      - 'asia-south1' 
+      - 'asia-south1'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
       - '--project'
       - '${PROJECT_ID}'
-      # Securely link the service to secrets in Secret Manager
       - '--update-secrets=DATABASE_URL=deeluvgallery-db-url:latest,SESSION_SECRET=deeluvgallery-session-secret:latest'
       - '--set-env-vars=NODE_ENV=production'
-    id: 'Deploy to Cloud Run'
+
+# This section makes the DATABASE_URL secret available to the 'Run Database Migrations' step.
+availableSecrets:
+  secretManager:
+  - versionName: projects/${PROJECT_ID}/secrets/DATABASE_URL/versions/latest
+    env: 'DATABASE_URL'
 
 options:
   logging: CLOUD_LOGGING_ONLY
