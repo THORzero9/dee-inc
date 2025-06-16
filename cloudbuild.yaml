@@ -33,4 +33,7 @@ substitutions:
   _DATABASE_URL: 'your-render-db-connection-string' # Default/placeholder, will be overridden by trigger
   _SESSION_SECRET: 'a-default-secret-if-not-overridden' # Default/placeholder, will be overridden by trigger
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 timeout: '1200s'
