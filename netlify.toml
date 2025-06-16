@@ -8,7 +8,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://dee-inc-api.onrender.com/api/:splat"
+  to = "https://deegallery-api-155894580321.asia-south1.run.app/api/:splat"
   status = 200
 
 [[redirects]]
@@ -18,10 +18,10 @@
 
 [[redirects]]
   from = "/photos/*"
-  to = "https://dee-inc-api.onrender.com/photos/:splat"
+  to = "https://deegallery-api-155894580321.asia-south1.run.app/photos/:splat"
   status = 200
 
 [[redirects]]
   from = "/moments/*"
-  to = "https://dee-inc-api.onrender.com/moments/:splat"
+  to = "https://deegallery-api-155894580321.asia-south1.run.app/moments/:splat"
   status = 200
