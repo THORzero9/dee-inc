@@ -126,55 +126,6 @@ export class DatabaseStorage implements IStorage {
           url: "https://images.unsplash.com/photo-1501901609772-df0848060b33?auto=format&fit=crop&w=800&q=80",
           category: "dates",
           date: "2023-06-15"
-        },
-        {
-          title: "Weekend Getaway",
-          description: "That amazing weekend at the beach",
-          url: "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?auto=format&fit=crop&w=800&q=80",
-          category: "trips",
-          date: "2023-07-08"
-        },
-        {
-          title: "Coffee Date",
-          description: "Just a regular day made special",
-          url: "https://images.unsplash.com/photo-1536854150886-354a3b64b8c3?auto=format&fit=crop&w=800&q=80",
-          category: "everyday",
-          date: "2023-08-03"
-        },
-        {
-          title: "Your Birthday",
-          description: "Celebrating your special day",
-          url: "https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?auto=format&fit=crop&w=800&q=80",
-          category: "special",
-          date: "2023-09-12"
-        },
-        {
-          title: "Movie Night",
-          description: "Cozy evening with popcorn and movies",
-          url: "https://images.unsplash.com/photo-1623244307563-f9ade3df8445?auto=format&fit=crop&w=800&q=80",
-          category: "everyday",
-          date: "2023-10-05"
-        },
-        {
-          title: "Hiking Adventure",
-          description: "That day we got lost but had the best time",
-          url: "https://images.unsplash.com/photo-1682687219800-bba120d709c5?auto=format&fit=crop&w=800&q=80",
-          category: "trips",
-          date: "2023-11-18"
-        },
-        {
-          title: "Anniversary Dinner",
-          description: "Celebrating six months together",
-          url: "https://images.unsplash.com/photo-1605147087660-73ea804cef95?auto=format&fit=crop&w=800&q=80",
-          category: "dates",
-          date: "2023-12-15"
-        },
-        {
-          title: "Holiday Season",
-          description: "Our first holiday season together",
-          url: "https://images.unsplash.com/photo-1573676564541-6e4550eb4545?auto=format&fit=crop&w=800&q=80",
-          category: "special",
-          date: "2023-12-25"
         }
       ];
 
@@ -195,30 +146,6 @@ export class DatabaseStorage implements IStorage {
           imageUrl: "https://images.unsplash.com/photo-1583878545136-516b9f517bfb?auto=format&fit=crop&w=800&q=80",
           date: "2023-06-15",
           tag: "First Date",
-          tagColor: "secondary"
-        },
-        {
-          title: "Six Months Together",
-          description: "Half a year of adventures, growth, and creating memories. This special dinner celebration marked how far we've come.",
-          imageUrl: "https://images.unsplash.com/photo-1515446134809-993c501ca304?auto=format&fit=crop&w=800&q=80",
-          date: "2023-12-15",
-          tag: "Anniversary",
-          tagColor: "primary"
-        },
-        {
-          title: "Our First Trip",
-          description: "That spontaneous weekend getaway that taught us how well we travel together. Sunrise walks, local food, and making plans for future adventures.",
-          imageUrl: "https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?auto=format&fit=crop&w=800&q=80",
-          date: "2023-08-08",
-          tag: "Travel",
-          tagColor: "accent"
-        },
-        {
-          title: "Meeting Our Friends",
-          description: "When our worlds officially collided. That nerve-wracking but wonderful evening when our friend groups finally met and instantly connected.",
-          imageUrl: "https://images.unsplash.com/photo-1567016526105-22da7c13161a?auto=format&fit=crop&w=800&q=80",
-          date: "2023-10-20",
-          tag: "Celebration",
           tagColor: "secondary"
         }
       ];

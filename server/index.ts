@@ -10,6 +10,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 
 const app = express();
+app.set('trust proxy', 1);
 
 // CORS configuration to allow requests from your Netlify frontend
 app.use((req, res, next) => {
@@ -53,7 +54,8 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    sameSite: 'none'
   }
 }));
 
