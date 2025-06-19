@@ -71,8 +71,8 @@ const Home = () => {
             <div className="md:flex">
               <div className="md:w-1/2 relative">
                 <img 
-                  src="https://images.pexels.com/photos/1415131/pexels-photo-1415131.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Couple holding hands on scenic background" 
+                  src="https://storage.googleapis.com/deegallery-images/IMG_20221106_145904.webp" 
+                  alt="our-homepage-image" 
                   className="w-full h-64 md:h-full object-cover"
                   loading="lazy"
                 />
