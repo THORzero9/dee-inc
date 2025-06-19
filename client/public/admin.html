@@ -284,32 +284,54 @@
       </ul>
     </div>
   </div>
-  </div> <script>
+  
+  <script>
+    // --- Start of Corrected & Complete Script ---
+
     const loginSection = document.getElementById('login-section');
     const mainContent = document.getElementById('main-content');
     const logoutButton = document.getElementById('logout-button');
     const loginForm = document.getElementById('login-form');
     const loginError = document.getElementById('login-error');
+    const API_BASE_URL = window.location.origin;
+
+    let currentlyEditing = null;
+    // --- New: Track attached listeners to prevent duplicates ---
+    let listenersAttached = {
+      'photos-list': false,
+      'moments-list': false
+    };
+
+    // --- New: Utility to show/hide loading spinner ---
+    function showLoading(target, show = true) {
+      let spinner = target.querySelector('.loading-spinner');
+      if (show) {
+        if (!spinner) {
+          spinner = document.createElement('span');
+          spinner.className = 'loading-spinner';
+          spinner.style.marginLeft = '10px';
+          spinner.innerHTML = '⏳';
+          target.appendChild(spinner);
+        }
+      } else {
+        if (spinner) spinner.remove();
+      }
+    }
 
     async function checkAuthStatus() {
       try {
-        const response = await fetch('/api/auth/status', {
-          credentials: 'include'
-        });
+        const response = await fetch(`${API_BASE_URL}/api/auth/status`, { credentials: 'include' });
         const data = await response.json();
-
         if (data.isAuthenticated) {
           loginSection.style.display = 'none';
           mainContent.style.display = 'block';
           logoutButton.style.display = 'block';
-          fetchPhotos(); 
+          fetchPhotos();
           fetchMoments();
         } else {
           loginSection.style.display = 'block';
           mainContent.style.display = 'none';
           logoutButton.style.display = 'none';
-          document.getElementById('photos-list').innerHTML = '';
-          document.getElementById('moments-list').innerHTML = '';
         }
       } catch (error) {
         console.error('Error checking auth status:', error);
@@ -324,9 +346,12 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       loginError.textContent = '';
-
+      // --- New: Disable login button and show loading ---
+      const loginBtn = document.getElementById('login-button');
+      loginBtn.disabled = true;
+      showLoading(loginBtn, true);
       try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
@@ -334,56 +359,37 @@
         });
         const data = await response.json();
         if (response.ok && data.success) {
-          // --- START OF FIX ---
-          // On successful login, manually hide the login form and show the main content.
-          loginSection.style.display = 'none';
-          mainContent.style.display = 'block';
-          logoutButton.style.display = 'block';
-          // Now, fetch the data to populate the admin panel.
-          fetchPhotos();
-          fetchMoments();
-          // --- END OF FIX ---
+          checkAuthStatus();
         } else {
-          loginError.textContent = data.message || 'Login failed. Please try again.';
+          loginError.textContent = data.message || 'Login failed.';
         }
       } catch (error) {
         console.error('Login error:', error);
         loginError.textContent = 'An error occurred during login.';
+      } finally {
+        loginBtn.disabled = false;
+        showLoading(loginBtn, false);
       }
     });
 
     logoutButton.addEventListener('click', async () => {
       try {
-        const response = await fetch('/api/auth/logout', { 
-          method: 'POST',
-          credentials: 'include' 
-        });
-        const data = await response.json();
-        if (response.ok && data.success) {
-          checkAuthStatus(); // Refresh UI to show login form
-        } else {
-          alert('Logout failed. Please try again.');
-        }
-      } catch (error) {
-        console.error('Logout error:', error);
-        alert('An error occurred during logout.');
-      }
+        const response = await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+        if (response.ok) { checkAuthStatus(); } 
+        else { alert('Logout failed. Please try again.'); }
+      } catch (error) { console.error('Logout error:', error); alert('An error occurred during logout.');}
     });
 
-    // Tab switching logic
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
         tab.classList.add('active');
         document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
       });
     });
     
-    document.addEventListener('DOMContentLoaded', () => {
-      checkAuthStatus();
-    });
+    document.addEventListener('DOMContentLoaded', checkAuthStatus);
     
     async function handleUnauthorized(response) {
       if (response.status === 401) {
@@ -394,286 +400,256 @@
       return false;
     }
 
-    // Photo form submission
     document.getElementById('photo-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const photo = {
-        title: document.getElementById('photo-title').value,
-        description: document.getElementById('photo-description').value,
-        url: document.getElementById('photo-url').value,
-        category: document.getElementById('photo-category').value,
-        date: document.getElementById('photo-date').value
-      };
-      
+      const photo = { title: document.getElementById('photo-title').value, description: document.getElementById('photo-description').value, url: document.getElementById('photo-url').value, category: document.getElementById('photo-category').value, date: document.getElementById('photo-date').value };
+      // --- New: Inline error and loading handling ---
+      let form = document.getElementById('photo-form');
+      let submitBtn = form.querySelector('button[type="submit"]');
+      let errorMsg = form.querySelector('.form-error');
+      if (!errorMsg) {
+        errorMsg = document.createElement('div');
+        errorMsg.className = 'form-error';
+        errorMsg.style.color = 'red';
+        errorMsg.style.marginTop = '8px';
+        form.appendChild(errorMsg);
+      }
+      errorMsg.textContent = '';
+      submitBtn.disabled = true;
+      showLoading(submitBtn, true);
       try {
-        const response = await fetch('/api/photos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(photo),
-          credentials: 'include'
-        });
-        
-        if (await handleUnauthorized(response)) return;
-
+        const response = await fetch(`${API_BASE_URL}/api/photos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(photo), credentials: 'include' });
+        if (await handleUnauthorized(response)) {
+          // --- Reset form state on unauthorized ---
+          submitBtn.disabled = false;
+          showLoading(submitBtn, false);
+          return;
+        }
         if (response.ok) {
           alert('Photo added successfully!');
           document.getElementById('photo-form').reset();
           fetchPhotos();
         } else {
-          const error = await response.json();
-          alert(`Error: ${error.message}`);
+          errorMsg.textContent = (await response.json()).message || 'Error adding photo.';
         }
-      } catch (error) {
-        console.error('Error adding photo:', error);
-        alert(`Error: ${error.message || 'Could not add photo.'}`);
+      } catch (error) { 
+        console.error('Error adding photo:', error); 
+        errorMsg.textContent = 'An error occurred.';
+      } finally {
+        submitBtn.disabled = false;
+        showLoading(submitBtn, false);
       }
     });
     
-    // Moment form submission
     document.getElementById('moment-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const moment = {
-        title: document.getElementById('moment-title').value,
-        description: document.getElementById('moment-description').value,
-        imageUrl: document.getElementById('moment-imageUrl').value,
-        date: document.getElementById('moment-date').value,
-        tag: document.getElementById('moment-tag').value,
-        tagColor: document.getElementById('moment-tagColor').value
-      };
-      
+      const moment = { title: document.getElementById('moment-title').value, description: document.getElementById('moment-description').value, imageUrl: document.getElementById('moment-imageUrl').value, date: document.getElementById('moment-date').value, tag: document.getElementById('moment-tag').value, tagColor: document.getElementById('moment-tagColor').value };
+      // --- New: Inline error and loading handling ---
+      let form = document.getElementById('moment-form');
+      let submitBtn = form.querySelector('button[type="submit"]');
+      let errorMsg = form.querySelector('.form-error');
+      if (!errorMsg) {
+        errorMsg = document.createElement('div');
+        errorMsg.className = 'form-error';
+        errorMsg.style.color = 'red';
+        errorMsg.style.marginTop = '8px';
+        form.appendChild(errorMsg);
+      }
+      errorMsg.textContent = '';
+      submitBtn.disabled = true;
+      showLoading(submitBtn, true);
       try {
-        const response = await fetch('/api/moments', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(moment),
-          credentials: 'include'
-        });
-        
-        if (await handleUnauthorized(response)) return;
-
+        const response = await fetch(`${API_BASE_URL}/api/moments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(moment), credentials: 'include' });
+        if (await handleUnauthorized(response)) {
+          // --- Reset form state on unauthorized ---
+          submitBtn.disabled = false;
+          showLoading(submitBtn, false);
+          return;
+        }
         if (response.ok) {
           alert('Moment added successfully!');
           document.getElementById('moment-form').reset();
           fetchMoments();
         } else {
-          const error = await response.json();
-          alert(`Error: ${error.message}`);
+          errorMsg.textContent = (await response.json()).message || 'Error adding moment.';
         }
-      } catch (error) {
-        console.error('Error adding moment:', error);
-        alert(`Error: ${error.message || 'Could not add moment.'}`);
+      } catch (error) { 
+        console.error('Error adding moment:', error); 
+        errorMsg.textContent = 'An error occurred.';
+      } finally {
+        submitBtn.disabled = false;
+        showLoading(submitBtn, false);
       }
     });
     
-    // Fetch all photos
-    async function fetchPhotos() {
-      try {
-        const response = await fetch('/api/photos', { credentials: 'include' });
-        if (await handleUnauthorized(response)) return; 
-        
-        if (!response.ok) {
-            const error = await response.json();
-            console.error(`Error fetching photos: ${error.message}`);
-            return; 
-        }
-        const photos = await response.json();
-        
-        const photosList = document.getElementById('photos-list');
-        photosList.innerHTML = '';
-        
-        let currentlyEditing = null;
-        
-        photos.forEach(photo => {
-          const photoItem = document.createElement('div');
-          photoItem.className = 'photo-item';
-          photoItem.dataset.id = photo.id;
-          
-          photoItem.innerHTML = `
-            <div class="display-view">
-              <h3>${photo.title}</h3>
-              <p><strong>Description:</strong> ${photo.description || 'No description'}</p>
-              <p><strong>Category:</strong> ${photo.category}</p>
-              <p><strong>Date:</strong> ${photo.date ? new Date(photo.date).toLocaleDateString() : 'N/A'}</p>
-              <p><strong>Image URL:</strong> ${photo.url}</p>
-              <img src="${photo.url}" alt="${photo.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
-              <div class="button-group">
-                <button class="edit-btn edit-photo" data-id="${photo.id}">Edit</button>
-                <button class="delete-btn delete-photo" data-id="${photo.id}">Delete</button>
-              </div>
-            </div>
-            <div class="edit-view" style="display:none;">
-              <form class="edit-photo-form">
-                <div class="form-group"><label>Title:</label><input type="text" class="edit-title" value="${photo.title}" required></div>
-                <div class="form-group"><label>Description:</label><textarea class="edit-description">${photo.description || ''}</textarea></div>
-                <div class="form-group"><label>URL:</label><input type="text" class="edit-url" value="${photo.url}" required></div>
-                <div class="form-group"><label>Category:</label><select class="edit-category"><option value="dates" ${photo.category === 'dates' ? 'selected' : ''}>Dates</option><option value="trips" ${photo.category === 'trips' ? 'selected' : ''}>Trips</option><option value="everyday" ${photo.category === 'everyday' ? 'selected' : ''}>Everyday</option><option value="special" ${photo.category === 'special' ? 'selected' : ''}>Special</option></select></div>
-                <div class="form-group"><label>Date:</label><input type="date" class="edit-date" value="${photo.date ? photo.date.split('T')[0] : ''}" required></div>
-                <div class="form-buttons"><button type="submit" class="save-photo-btn">Save Changes</button><button type="button" class="cancel-btn cancel-edit">Cancel</button></div>
-              </form>
-            </div>
-          `;
-          photosList.appendChild(photoItem);
-        });
-        
-        document.querySelectorAll('.delete-photo').forEach(button => {
-          button.addEventListener('click', async (e) => {
-            if (confirm('Are you sure you want to delete this photo?')) {
-              const id = e.currentTarget.dataset.id; // Use e.currentTarget
-              try {
-                const response = await fetch(`/api/photos/${id}`, { method: 'DELETE', credentials: 'include' });
-                if (await handleUnauthorized(response)) return;
-                if (response.ok) {
-                  alert('Photo deleted successfully!');
-                  fetchPhotos();
-                } else {
-                  const error = await response.json();
-                  alert(`Error: ${error.message}`);
+    // This is a generic function to attach all our event listeners
+    function attachEventListeners(listId, itemClass, editClass, deleteClass, formClass, fetchFunction, endpoint) {
+      const listElement = document.getElementById(listId);
+      if (!listElement) return;
+      // --- New: Prevent duplicate listeners ---
+      if (listenersAttached[listId]) return;
+      listenersAttached[listId] = true;
+
+      // Use a single event listener on the parent list to handle all clicks (Event Delegation)
+      listElement.addEventListener('click', async (e) => {
+        const target = e.target;
+
+        if (target && target.classList.contains(deleteClass)) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                const id = target.dataset.id;
+                // --- New: Disable button and show loading ---
+                target.disabled = true;
+                showLoading(target, true);
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${id}`, { method: 'DELETE', credentials: 'include' });
+                    if (await handleUnauthorized(response)) {
+                      // --- Reset button state on unauthorized ---
+                      if (target && target.parentNode) {
+                        target.disabled = false;
+                        showLoading(target, false);
+                      }
+                      return;
+                    }
+                    if (response.ok) {
+                        alert('Item deleted successfully!');
+                        fetchFunction();
+                    } else {
+                        alert(`Error: ${(await response.json()).message}`);
+                    }
+                } catch (error) { console.error(`Error deleting ${endpoint}:`, error); }
+                finally {
+                  // --- Check if button still exists before re-enabling ---
+                  if (target && target.parentNode) {
+                    target.disabled = false;
+                    showLoading(target, false);
+                  }
                 }
-              } catch (error) { console.error('Error deleting photo:', error); alert(`Error: ${error.message || 'Could not delete photo.'}`); }
             }
-          });
-        });
+        }
         
-        document.querySelectorAll('.edit-photo-form').forEach(form => {
-          form.addEventListener('submit', async (e) => {
+        if (target && target.classList.contains(editClass)) {
+            const id = target.dataset.id;
+            const item = document.querySelector(`.${itemClass}[data-id="${id}"]`);
+            if (currentlyEditing && currentlyEditing.id !== id) {
+                const previousItem = document.querySelector(`[data-id="${currentlyEditing.id}"]`);
+                if (previousItem) {
+                    previousItem.querySelector('.display-view').style.display = 'block';
+                    previousItem.querySelector('.edit-view').style.display = 'none';
+                    previousItem.classList.remove('editing');
+                }
+            }
+            item.querySelector('.display-view').style.display = 'none';
+            item.querySelector('.edit-view').style.display = 'block';
+            item.classList.add('editing');
+            currentlyEditing = { id: id, element: item };
+        }
+
+        if(target && target.classList.contains('cancel-edit')) {
             e.preventDefault();
-            const photoItem = form.closest('.photo-item');
-            const id = photoItem.dataset.id;
-            const updatedPhoto = { title: form.querySelector('.edit-title').value, description: form.querySelector('.edit-description').value, url: form.querySelector('.edit-url').value, category: form.querySelector('.edit-category').value, date: form.querySelector('.edit-date').value };
+            const item = target.closest(`.${itemClass}`);
+            item.querySelector('.display-view').style.display = 'block';
+            item.querySelector('.edit-view').style.display = 'none';
+            item.classList.remove('editing');
+            currentlyEditing = null;
+        }
+      });
+      
+      listElement.addEventListener('submit', async(e) => {
+        const target = e.target;
+        if(target && target.classList.contains(formClass)) {
+            e.preventDefault();
+            const item = target.closest(`.${itemClass}`);
+            const id = item.dataset.id;
+            let updatedData;
+            // --- New: Inline error and loading handling for edit forms ---
+            let submitBtn = target.querySelector('button[type="submit"]');
+            let errorMsg = target.querySelector('.form-error');
+            if (!errorMsg) {
+              errorMsg = document.createElement('div');
+              errorMsg.className = 'form-error';
+              errorMsg.style.color = 'red';
+              errorMsg.style.marginTop = '8px';
+              target.appendChild(errorMsg);
+            }
+            errorMsg.textContent = '';
+            submitBtn.disabled = true;
+            showLoading(submitBtn, true);
+            if (endpoint === 'photos') {
+                updatedData = { title: item.querySelector('.edit-title').value, description: item.querySelector('.edit-description').value, url: item.querySelector('.edit-url').value, category: item.querySelector('.edit-category').value, date: item.querySelector('.edit-date').value };
+            } else {
+                updatedData = { title: item.querySelector('.edit-title').value, description: item.querySelector('.edit-description').value, imageUrl: item.querySelector('.edit-imageUrl').value, date: item.querySelector('.edit-date').value, tag: item.querySelector('.edit-tag').value, tagColor: item.querySelector('.edit-tagColor').value };
+            }
             try {
-              const response = await fetch(`/api/photos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedPhoto), credentials: 'include' });
-              if (await handleUnauthorized(response)) return;
-              if (response.ok) {
-                alert('Photo updated successfully!');
-                fetchPhotos();
-              } else {
-                const error = await response.json();
-                alert(`Error: ${error.message}`);
-              }
-            } catch (error) { console.error('Error updating photo:', error); alert(`Error: ${error.message || 'Could not update photo.'}`); }
-          });
-        });
-        
-        document.querySelectorAll('.edit-photo').forEach(button => { /* ... edit logic ... */ });
-        document.querySelectorAll('.cancel-edit').forEach(button => { /* ... cancel logic ... */ });
-      } catch (error) {
-        console.error('Error fetching photos:', error);
-      }
+                const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedData), credentials: 'include' });
+                if (await handleUnauthorized(response)) {
+                  // --- Reset form state on unauthorized ---
+                  submitBtn.disabled = false;
+                  showLoading(submitBtn, false);
+                  return;
+                }
+                if (response.ok) {
+                    alert('Item updated successfully!');
+                    fetchFunction();
+                } else {
+                    errorMsg.textContent = (await response.json()).message || 'Error updating item.';
+                }
+            } catch (error) { 
+              console.error(`Error updating ${endpoint}:`, error); 
+              errorMsg.textContent = 'An error occurred.';
+            } finally {
+              submitBtn.disabled = false;
+              showLoading(submitBtn, false);
+            }
+        }
+      });
+    }
+
+    async function fetchPhotos() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/photos`, { credentials: 'include' });
+            if (await handleUnauthorized(response)) return;
+            if (!response.ok) throw new Error(await response.text());
+            const photos = await response.json();
+            const photosList = document.getElementById('photos-list');
+            photosList.innerHTML = '';
+            // --- New: Reset listener flag so listeners can be re-attached after re-render ---
+            listenersAttached['photos-list'] = false;
+            photos.forEach(photo => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                photoItem.dataset.id = photo.id;
+                photoItem.innerHTML = `
+                    <div class="display-view"><h3>${photo.title}</h3><p><strong>Description:</strong> ${photo.description || 'No description'}</p><p><strong>Category:</strong> ${photo.category}</p><p><strong>Date:</strong> ${photo.date ? new Date(photo.date).toLocaleDateString() : 'N/A'}</p><p><strong>Image URL:</strong> ${photo.url}</p><img src="${photo.url}" alt="${photo.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;"><div class="button-group"><button class="edit-btn edit-photo" data-id="${photo.id}">Edit</button><button class="delete-btn delete-photo" data-id="${photo.id}">Delete</button></div></div>
+                    <div class="edit-view" style="display:none;"><form class="edit-photo-form"><div class="form-group"><label>Title:</label><input type="text" class="edit-title" value="${photo.title}" required></div><div class="form-group"><label>Description:</label><textarea class="edit-description">${photo.description || ''}</textarea></div><div class="form-group"><label>URL:</label><input type="text" class="edit-url" value="${photo.url}" required></div><div class="form-group"><label>Category:</label><select class="edit-category"><option value="dates" ${photo.category === 'dates' ? 'selected' : ''}>Dates</option><option value="trips" ${photo.category === 'trips' ? 'selected' : ''}>Trips</option><option value="everyday" ${photo.category === 'everyday' ? 'selected' : ''}>Everyday</option><option value="special" ${photo.category === 'special' ? 'selected' : ''}>Special</option></select></div><div class="form-group"><label>Date:</label><input type="date" class="edit-date" value="${photo.date ? photo.date.split('T')[0] : ''}" required></div><div class="form-buttons"><button type="submit" class="save-photo-btn">Save Changes</button><button type="button" class="cancel-btn cancel-edit">Cancel</button></div></form></div>`;
+                photosList.appendChild(photoItem);
+            });
+            // This now uses the generic function
+            attachEventListeners('photos-list', 'photo-item', 'edit-photo', 'delete-photo', 'edit-photo-form', fetchPhotos, 'photos');
+        } catch (error) { console.error('Error fetching photos:', error); }
     }
     
-    // Replace the entire fetchMoments function
     async function fetchMoments() {
-      try {
-        const response = await fetch('/api/moments', { credentials: 'include' });
-        if (await handleUnauthorized(response)) return;
-        if (!response.ok) {
-            const error = await response.json();
-            console.error(`Error fetching moments: ${error.message}`);
-            return;
-        }
-        const moments = await response.json();
-        
-        const momentsList = document.getElementById('moments-list');
-        momentsList.innerHTML = '';
-        
-        let currentlyEditing = null;
-        
-        moments.forEach(moment => {
-          const momentItem = document.createElement('div');
-          momentItem.className = 'moment-item';
-          momentItem.dataset.id = moment.id;
-          
-          // --- START OF FIX for momentItem ---
-          momentItem.innerHTML = `
-            <div class="display-view">
-              <h3>${moment.title}</h3>
-              <p><strong>Description:</strong> ${moment.description}</p>
-              <p><strong>Date:</strong> ${moment.date ? new Date(moment.date).toLocaleDateString() : 'N/A'}</p>
-              <p><strong>Tag:</strong> ${moment.tag}</p>
-              <p><strong>Tag Color:</strong> ${moment.tagColor}</p>
-              <p><strong>Image URL:</strong> ${moment.imageUrl}</p>
-              <img src="${moment.imageUrl}" alt="${moment.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;">
-              <div class="button-group">
-                <button class="edit-btn edit-moment" data-id="${moment.id}">Edit</button>
-                <button class="delete-btn delete-moment" data-id="${moment.id}">Delete</button>
-              </div>
-            </div>
-            <div class="edit-view" style="display:none;">
-              <form class="edit-moment-form">
-                <div class="form-group"><label>Title:</label><input type="text" class="edit-title" value="${moment.title}" required></div>
-                <div class="form-group"><label>Description:</label><textarea class="edit-description">${moment.description || ''}</textarea></div>
-                <div class="form-group"><label>Image URL:</label><input type="text" class="edit-imageUrl" value="${moment.imageUrl}" required></div>
-                <div class="form-group"><label>Date:</label><input type="date" class="edit-date" value="${moment.date ? moment.date.split('T')[0] : ''}" required></div>
-                <div class="form-group"><label>Tag:</label><select class="edit-tag"><option value="First Date" ${moment.tag === 'First Date' ? 'selected' : ''}>First Date</option><option value="Anniversary" ${moment.tag === 'Anniversary' ? 'selected' : ''}>Anniversary</option><option value="Travel" ${moment.tag === 'Travel' ? 'selected' : ''}>Travel</option><option value="Celebration" ${moment.tag === 'Celebration' ? 'selected' : ''}>Celebration</option></select></div>
-                <div class="form-group"><label>Tag Color:</label><select class="edit-tagColor"><option value="primary" ${moment.tagColor === 'primary' ? 'selected' : ''}>Primary (Pink)</option><option value="secondary" ${moment.tagColor === 'secondary' ? 'selected' : ''}>Secondary (Purple)</option><option value="accent" ${moment.tagColor === 'accent' ? 'selected' : ''}>Accent (Blue)</option></select></div>
-                <div class="form-buttons"><button type="submit" class="save-moment-btn">Save Changes</button><button type="button" class="cancel-btn cancel-edit">Cancel</button></div>
-              </form>
-            </div>`;
-           // --- END OF FIX for momentItem ---
-          momentsList.appendChild(momentItem);
-        });
-        
-        document.querySelectorAll('.delete-moment').forEach(button => {
-          button.addEventListener('click', async (e) => {
-            if (confirm('Are you sure you want to delete this moment?')) {
-              const id = e.currentTarget.dataset.id; // Use e.currentTarget
-              try {
-                const response = await fetch(`/api/moments/${id}`, { method: 'DELETE', credentials: 'include' });
-                if (await handleUnauthorized(response)) return;
-                if (response.ok) {
-                  alert('Moment deleted successfully!');
-                  fetchMoments();
-                } else {
-                  const error = await response.json();
-                  alert(`Error: ${error.message}`);
-                }
-              } catch (error) { console.error('Error deleting moment:', error); alert(`Error: ${error.message || 'Could not delete moment.'}`); }
-            }
-          });
-        });
-
-        document.querySelectorAll('.edit-moment-form').forEach(form => {
-          form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const momentItem = form.closest('.moment-item');
-            const id = momentItem.dataset.id;
-            const updatedMoment = { title: form.querySelector('.edit-title').value, description: form.querySelector('.edit-description').value, imageUrl: form.querySelector('.edit-imageUrl').value, date: form.querySelector('.edit-date').value, tag: form.querySelector('.edit-tag').value, tagColor: form.querySelector('.edit-tagColor').value };
-            try {
-              const response = await fetch(`/api/moments/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedMoment), credentials: 'include' });
-              if (await handleUnauthorized(response)) return;
-              if (response.ok) {
-                alert('Moment updated successfully!');
-                fetchMoments();
-              } else {
-                const error = await response.json();
-                alert(`Error: ${error.message}`);
-              }
-            } catch (error) { console.error('Error updating moment:', error); alert(`Error: ${error.message || 'Could not update moment.'}`); }
-          });
-        });
-
-        // Attach event listeners for edit and cancel after rendering
-        document.querySelectorAll('.edit-moment').forEach(button => {
-  button.addEventListener('click', (e) => {
-    const momentItem = button.closest('.moment-item');
-    momentItem.querySelector('.display-view').style.display = 'none';
-    momentItem.querySelector('.edit-view').style.display = 'block';
-    momentItem.classList.add('editing');
-  });
-});
-document.querySelectorAll('.cancel-edit').forEach(button => {
-  button.addEventListener('click', (e) => {
-    const momentItem = button.closest('.moment-item');
-    momentItem.querySelector('.edit-view').style.display = 'none';
-    momentItem.querySelector('.display-view').style.display = 'block';
-    momentItem.classList.remove('editing');
-  });
-});
-      } catch (error) {
-        console.error('Error fetching moments:', error);
-      }
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/moments`, { credentials: 'include' });
+            if (await handleUnauthorized(response)) return;
+            if (!response.ok) throw new Error(await response.text());
+            const moments = await response.json();
+            const momentsList = document.getElementById('moments-list');
+            momentsList.innerHTML = '';
+            // --- New: Reset listener flag so listeners can be re-attached after re-render ---
+            listenersAttached['moments-list'] = false;
+            moments.forEach(moment => {
+                const momentItem = document.createElement('div');
+                momentItem.className = 'moment-item';
+                momentItem.dataset.id = moment.id;
+                momentItem.innerHTML = `
+                    <div class="display-view"><h3>${moment.title}</h3><p><strong>Description:</strong> ${moment.description}</p><p><strong>Date:</strong> ${moment.date ? new Date(moment.date).toLocaleDateString() : 'N/A'}</p><p><strong>Tag:</strong> ${moment.tag}</p><p><strong>Tag Color:</strong> ${moment.tagColor}</p><p><strong>Image URL:</strong> ${moment.imageUrl}</p><img src="${moment.imageUrl}" alt="${moment.title}" style="max-width: 200px; max-height: 150px; object-fit: cover;"><div class="button-group"><button class="edit-btn edit-moment" data-id="${moment.id}">Edit</button><button class="delete-btn delete-moment" data-id="${moment.id}">Delete</button></div></div>
+                    <div class="edit-view" style="display:none;"><form class="edit-moment-form"><div class="form-group"><label>Title:</label><input type="text" class="edit-title" value="${moment.title}" required></div><div class="form-group"><label>Description:</label><textarea class="edit-description">${moment.description || ''}</textarea></div><div class="form-group"><label>Image URL:</label><input type="text" class="edit-imageUrl" value="${moment.imageUrl}" required></div><div class="form-group"><label>Date:</label><input type="date" class="edit-date" value="${moment.date ? moment.date.split('T')[0] : ''}" required></div><div class="form-group"><label>Tag:</label><select class="edit-tag"><option value="First Date" ${moment.tag === 'First Date' ? 'selected' : ''}>First Date</option><option value="Anniversary" ${moment.tag === 'Anniversary' ? 'selected' : ''}>Anniversary</option><option value="Travel" ${moment.tag === 'Travel' ? 'selected' : ''}>Travel</option><option value="Celebration" ${moment.tag === 'Celebration' ? 'selected' : ''}>Celebration</option></select></div><div class="form-group"><label>Tag Color:</label><select class="edit-tagColor"><option value="primary" ${moment.tagColor === 'primary' ? 'selected' : ''}>Primary (Pink)</option><option value="secondary" ${moment.tagColor === 'secondary' ? 'selected' : ''}>Secondary (Purple)</option><option value="accent" ${moment.tagColor === 'accent' ? 'selected' : ''}>Accent (Blue)</option></select></div><div class="form-buttons"><button type="submit" class="save-moment-btn">Save Changes</button><button type="button" class="cancel-btn cancel-edit">Cancel</button></div></form></div>`;
+                momentsList.appendChild(momentItem);
+            });
+            // This now uses the generic function
+            attachEventListeners('moments-list', 'moment-item', 'edit-moment', 'delete-moment', 'edit-moment-form', fetchMoments, 'moments');
+        } catch (error) { console.error('Error fetching moments:', error); }
     }
   </script>
 </body>
