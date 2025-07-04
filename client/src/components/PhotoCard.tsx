@@ -58,6 +58,14 @@ const PhotoCard = ({ photo, onClick }: PhotoCardProps) => {
       
       <div className="p-4">
         <h3 className="font-heading text-xl">{photo.title}</h3>
+        
+        {/* Optional description display */}
+        {photo.description && (
+          <div className="bg-foreground/5 p-2 rounded-lg border border-dashed border-foreground/10 mt-2 mb-2">
+            <p className="text-foreground/80 text-sm">{photo.description}</p>
+          </div>
+        )}
+        
         <div className="flex items-center mt-2 text-foreground/60">
           <Calendar className="h-4 w-4 mr-1" />
           <p className="text-sm">{photo.date}</p>

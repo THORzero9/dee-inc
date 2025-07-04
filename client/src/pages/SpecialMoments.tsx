@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Moment } from "@shared/schema";
+import { Lightbox } from "@/components/ui/lightbox";
 import { motion } from "framer-motion";
 import { Calendar, Heart, MapPin, Star } from "lucide-react";
 
@@ -17,6 +19,8 @@ const getIconByTag = (tag: string) => {
 };
 
 const SpecialMoments = () => {
+  const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
+  
   const { data: moments = [] } = useQuery<Moment[]>({
     queryKey: ["/api/moments"],
   });
@@ -45,7 +49,7 @@ const SpecialMoments = () => {
           
           <div className="bg-white p-4 rounded-xl border-2 border-dashed border-foreground/10 max-w-2xl mx-auto shadow-sm">
             <p className="text-foreground/70">
-              The most wonderful memories that have made our story so special! ✨
+              The most wonderful memories that have made our story so special! ✨ Click on any photo to see it in full size!
             </p>
           </div>
         </div>
@@ -83,16 +87,26 @@ const SpecialMoments = () => {
                       <IconComponent className={`h-5 w-5 text-${moment.tagColor}`} />
                     </div>
                     
-                    <div className="relative">
+                    <div 
+                      className="relative cursor-pointer group"
+                      onClick={() => setSelectedMoment(moment)}
+                    >
                       <div className="pb-[56.25%]">
                         <img
                           src={moment.imageUrl}
                           alt={moment.title}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          className="absolute inset-0 w-full h-full object-contain bg-muted/10"
                           loading="lazy"
                         />
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50"></div>
+                      
+                      {/* Hover indicator for enlarging */}
+                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="bg-white/80 backdrop-blur-sm p-3 rounded-full">
+                          <Heart className="h-6 w-6 text-primary fill-primary/50" />
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="p-6 relative">
@@ -125,6 +139,14 @@ const SpecialMoments = () => {
             })}
           </div>
         </div>
+
+        {/* Lightbox for Moment Photo Viewing */}
+        <Lightbox
+          open={!!selectedMoment}
+          onClose={() => setSelectedMoment(null)}
+          image={selectedMoment?.imageUrl || ""}
+          alt={selectedMoment?.title || ""}
+        />
       </div>
     </section>
   );
