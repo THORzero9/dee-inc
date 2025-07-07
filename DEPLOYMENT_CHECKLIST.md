@@ -4,7 +4,7 @@
 
 ### Step 1: GitHub Repository
 - [ ] Create new GitHub repository
-- [ ] Push your code from Replit to GitHub
+- [ ] Push your code to GitHub
 - [ ] Verify all files are uploaded correctly
 
 ## Phase 2: Database Setup (Neon)

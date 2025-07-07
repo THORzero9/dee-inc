@@ -1,0 +1,29 @@
+{
+  "name": "Our Love Story - Personal Photo Gallery",
+  "short_name": "Our Story",
+  "description": "A beautiful personal photo gallery showcasing our love story, special moments, and memories together.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fef7ed",
+  "theme_color": "#ec4899",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["photo", "lifestyle", "social"],
+  "lang": "en-US"
+}
