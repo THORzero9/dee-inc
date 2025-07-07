@@ -1,3 +1,4 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/11475363-6ad3-4d6f-99b2-4b324c9a84d0/deploy-status)](https://app.netlify.com/projects/deeluvgallery/deploys)
 # Our Love Story - Personal Photo Gallery
 
 A beautiful, modern personal website showcasing a collection of photos, special moments, and a surprise birthday comic strip. This full-stack application features a React frontend with TypeScript and an Express.js backend, deployed with a modern cloud architecture.
