@@ -1,3 +1,4 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/11475363-6ad3-4d6f-99b2-4b324c9a84d0/deploy-status)](https://app.netlify.com/projects/deeluvgallery/deploys)
 # Our Love Story - Personal Photo Gallery
 
 A cozy personal website showcasing a collection of photos and a surprise birthday comic strip. This project is built using React, Express, and PostgreSQL.
